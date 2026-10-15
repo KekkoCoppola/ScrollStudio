@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ScrollStudio — Stories</title>
+  <meta name="description" content="ScrollStudio stories on design, living and voyage.">
+  <meta name="theme-color" content="#E9E9E8">
+  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400&display=swap">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <div class="room">
+    <header class="topbar">
+      <div class="topbar__meta">
+        <time class="topbar__date" data-today datetime="2018-08-10">Friday, 10 aug</time>
+        <span class="topbar__climate">
+          <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.1" aria-hidden="true">
+            <circle cx="8" cy="5" r="3.3"/>
+            <circle cx="5" cy="10.4" r="3.3"/>
+            <circle cx="11" cy="10.4" r="3.3"/>
+          </svg>
+          22°, living room
+        </span>
+      </div>
+
+      <nav class="topbar__nav" aria-label="Primary">
+        <a href="#stories" aria-current="page">Stories</a>
+        <a href="#schedule">Schedule</a>
+        <a href="#habitat">Habitat</a>
+        <a class="topbar__home" href="#home" aria-label="Home">
+          <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2.5 7.2 8 2.6l5.5 4.6v6.3h-11z"/>
+            <path d="M2.5 10.9h11"/>
+          </svg>
+        </a>
+      </nav>
+    </header>
+
+    <main>
+      <h1 class="visually-hidden">ScrollStudio</h1>
+
+      <section class="carousel" id="stories" aria-roledescription="carousel" aria-label="Stories" data-carousel>
+        <button class="carousel__toggle" type="button" aria-pressed="false" data-carousel-toggle>Pause stories</button>
+
+        <!-- Placeholder content: swap the files in assets/placeholders/ (see DESIGN.md) -->
+        <ul class="carousel__track" data-carousel-track>
+          <li class="carousel__glow" role="presentation" data-carousel-glow></li>
+
+          <li class="carousel__slide">
+            <a class="story" href="#story-design">
+              <span class="story__paper"></span>
+              <span class="story__media"><img class="story__image" src="assets/placeholders/story-01.svg" alt="" draggable="false"></span>
+              <img class="story__pop story__pop--behind" src="assets/placeholders/pop-01-shadow.svg" alt="" style="--l:100;--t:150;--w:140" draggable="false">
+              <svg class="story__glyph" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><rect x="2" y="2" width="8" height="8"/></svg>
+              <span class="story__text">
+                <span class="story__title">Design</span>
+                <span class="story__author">Chengtao Yi</span>
+              </span>
+              <img class="story__avatar" src="assets/placeholders/avatar-01.svg" alt="" draggable="false">
+            </a>
+            <div class="story__detail">
+              <a class="point point--lg" href="#design-form" style="--x:271;--y:-40;--xs:228;--ys:-18;--d:0">
+                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M2.5 11.5V1M2.5 1.5H7V5H2.5M7 3h3v3.5H5V5"/></svg>
+                <span class="point__title">Form</span>
+                <span class="point__author">Author name</span>
+              </a>
+              <a class="point" href="#design-material" style="--x:-75;--y:113;--xs:230;--ys:205;--d:1">
+                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="6" cy="6" r="5"/><circle cx="6" cy="6" r="1.8"/></svg>
+                <span class="point__title">Material</span>
+                <span class="point__author">Author name</span>
+              </a>
+              <a class="story__plus" href="#design-new" aria-label="Add to Design">
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M5 1v8M1 5h8"/></svg>
+              </a>
+            </div>
+          </li>
+
+          <li class="carousel__slide">
+            <a class="story" href="#story-places">
+              <span class="story__paper"></span>
+              <span class="story__media"><img class="story__image" src="assets/placeholders/story-02.svg" alt="" draggable="false"></span>
+              <svg class="story__glyph" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="6" cy="6" r="4.5"/></svg>
+              <span class="story__text">
+                <span class="story__title">Places</span>
+                <span class="story__author">Brooke Holm</span>
+              </span>
+              <img class="story__avatar" src="assets/placeholders/avatar-02.svg" alt="" draggable="false">
+            </a>
+            <div class="story__detail">
+              <a class="point point--lg" href="#places-salt" style="--x:271;--y:-40;--xs:228;--ys:-18;--d:0">
+                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M2.5 11.5V1M2.5 1.5H7V5H2.5M7 3h3v3.5H5V5"/></svg>
+                <span class="point__title">Salt Flats</span>
+                <span class="point__author">Author name</span>
+              </a>
+              <a class="point" href="#places-coast" style="--x:-75;--y:113;--xs:230;--ys:205;--d:1">
+                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="6" cy="6" r="5"/><circle cx="6" cy="6" r="1.8"/></svg>
+                <span class="point__title">Coastline</span>
+                <span class="point__author">Author name</span>
+              </a>
+              <a class="story__plus" href="#places-new" aria-label="Add to Places">
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M5 1v8M1 5h8"/></svg>
+              </a>
+            </div>
+          </li>
+
+          <li class="carousel__slide">
+            <a class="story story--pano" href="#story-apogee">
+              <span class="story__paper"></span>
+              <span class="story__media"><img class="story__pano" src="assets/placeholders/story-03-pano.svg" alt="" style="--l:-80;--t:33;--w:440" draggable="false"></span>
+              <svg class="story__glyph" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M6 1.5 11 10.5H1z"/></svg>
+              <span class="story__text">
+                <span class="story__title">Apogee</span>
+                <span class="story__author">John Westrock</span>
+              </span>
+              <img class="story__avatar" src="assets/placeholders/avatar-03.svg" alt="" draggable="false">
+            </a>
+            <div class="story__detail">
+              <a class="point point--lg" href="#apogee-explorer" style="--x:271;--y:-40;--xs:228;--ys:-18;--d:0">
+                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M2.5 11.5V1M2.5 1.5H7V5H2.5M7 3h3v3.5H5V5"/></svg>
+                <span class="point__title">Explorer</span>
+                <span class="point__author">Samantha Jensen</span>
+              </a>
+              <a class="point" href="#apogee-base-camp" style="--x:-75;--y:113;--xs:230;--ys:205;--d:1">
+                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="6" cy="6" r="5"/><circle cx="6" cy="6" r="1.8"/></svg>
+                <span class="point__title">Base Camp</span>
+                <span class="point__author">Patricia Schmidt</span>
+              </a>
+              <a class="story__plus" href="#apogee-new" aria-label="Add to Apogee">
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M5 1v8M1 5h8"/></svg>
+              </a>
+            </div>
+          </li>
+
+          <li class="carousel__slide">
+            <a class="story" href="#story-milkbath">
+              <span class="story__paper"></span>
+              <span class="story__media"><img class="story__image" src="assets/placeholders/story-04.svg" alt="" draggable="false"></span>
+              <img class="story__pop" src="assets/placeholders/pop-04-hair.svg" alt="" style="--l:60;--t:-22;--w:120" draggable="false">
+              <svg class="story__glyph" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M6 1.2C8.4 4.2 9.6 6 9.6 7.6a3.6 3.6 0 0 1-7.2 0C2.4 6 3.6 4.2 6 1.2z"/></svg>
+              <span class="story__text">
+                <span class="story__title">Milkbath</span>
+                <span class="story__author">Natasha</span>
+              </span>
+              <img class="story__avatar" src="assets/placeholders/avatar-04.svg" alt="" draggable="false">
+            </a>
+            <div class="story__detail">
+              <a class="point point--lg" href="#milkbath-ritual" style="--x:271;--y:-40;--xs:228;--ys:-18;--d:0">
+                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M2.5 11.5V1M2.5 1.5H7V5H2.5M7 3h3v3.5H5V5"/></svg>
+                <span class="point__title">Ritual</span>
+                <span class="point__author">Author name</span>
+              </a>
+              <a class="point" href="#milkbath-skin" style="--x:-75;--y:113;--xs:230;--ys:205;--d:1">
+                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="6" cy="6" r="5"/><circle cx="6" cy="6" r="1.8"/></svg>
+                <span class="point__title">Skin</span>
+                <span class="point__author">Author name</span>
+              </a>
+              <a class="story__plus" href="#milkbath-new" aria-label="Add to Milkbath">
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M5 1v8M1 5h8"/></svg>
+              </a>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="intro" aria-labelledby="intro-title">
+        <span class="intro__mark" aria-hidden="true"></span>
+        <h2 class="intro__title" id="intro-title">Stories</h2>
+        <p class="intro__tags">Design, Living, Voyage</p>
+      </section>
+    </main>
+
+    <figure class="scene" aria-hidden="true">
+      <img src="assets/scene/desk-scene.svg" alt="" width="460" height="360">
+    </figure>
+  </div>
+
+  <footer class="footer">
+    <span class="footer__brand"><span class="intro__mark" aria-hidden="true"></span>ScrollStudio</span>
+    <span>© 2026</span>
+  </footer>
+</body>
+</html>

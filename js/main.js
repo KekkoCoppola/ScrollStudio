@@ -1,0 +1,388 @@
+(() => {
+  'use strict';
+
+  // Topbar date, written the way the design does: "Friday, 10 aug"
+  const dateEl = document.querySelector('[data-today]');
+  if (dateEl) {
+    const now = new Date();
+    const weekday = now.toLocaleDateString('en-GB', { weekday: 'long' });
+    const month = now.toLocaleDateString('en-GB', { month: 'short' }).toLowerCase().replace('.', '');
+    dateEl.textContent = `${weekday}, ${now.getDate()} ${month}`;
+    dateEl.dateTime = now.toISOString().slice(0, 10);
+  }
+
+  const root = document.querySelector('[data-carousel]');
+  if (!root) return;
+
+  const track = root.querySelector('[data-carousel-track]');
+  const glow = root.querySelector('[data-carousel-glow]');
+  const toggle = root.querySelector('[data-carousel-toggle]');
+  const originals = Array.from(track.querySelectorAll('.carousel__slide'));
+  if (!originals.length) return;
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const phone = window.matchMedia('(max-width: 640px)');
+
+  // Motion measured frame by frame from the reference GIF (25 fps).
+  // Slides, flings and closing share one 600 ms curve, whatever the distance travelled.
+  const GLIDE_CURVE = [0, 0.077, 0.166, 0.255, 0.345, 0.43, 0.514, 0.6, 0.677, 0.749, 0.813, 0.872, 0.923, 0.962, 0.991, 1];
+  const OPEN_CURVE = [0, 0.256, 0.388, 0.519, 0.638, 0.75, 0.844, 0.925, 0.981, 1];
+  const GLIDE_MS = 600;
+  const OPEN_MS = 360;
+  const CLOSE_MS = 400;
+  const DWELL_MS = 2400; // rest between automatic steps
+  const PUSH_LEFT = 160; // card units the neighbours move aside when a story opens
+  const PUSH_RIGHT = 210;
+  const FLING_PROJECTION = 520; // ms; matches the starting speed of the glide curve
+
+  const fromTable = (table) => (p) => {
+    const x = Math.min(1, Math.max(0, p)) * (table.length - 1);
+    const i = Math.floor(x);
+    return i >= table.length - 1 ? 1 : table[i] + (table[i + 1] - table[i]) * (x - i);
+  };
+  const glideEase = fromTable(GLIDE_CURVE);
+  const openEase = fromTable(OPEN_CURVE);
+  const mod = (n, m) => ((n % m) + m) % m;
+  const motionMs = (ms) => (reduceMotion.matches ? 0 : ms);
+
+  let slides = originals;
+  let cardW = 0;
+  let pitch = 0;
+  let startX = 0;
+  let loopLen = 0;
+
+  let offset = 0; // px travelled; grows as the strip moves right → left
+  let spread = 0; // 0 = closed, 1 = a story is open and its neighbours have moved aside
+  let openSlide = null;
+  let isOpen = false;
+  let rafId = 0;
+  let autoplayTimer = 0;
+  const tweens = new Map();
+
+  const pause = { hover: false, focus: false, drag: false, user: false, hidden: false };
+  const drag = { active: false, id: null, x0: 0, offset0: 0, moved: false, suppressClick: false, samples: [] };
+
+  root.classList.add('is-enhanced');
+
+  // Layout
+
+  function buildClones(sets) {
+    track.querySelectorAll('[data-clone]').forEach((node) => node.remove());
+    const clones = [];
+    for (let s = 1; s < sets; s += 1) {
+      originals.forEach((slide) => {
+        const clone = slide.cloneNode(true);
+        clone.dataset.clone = '';
+        clone.setAttribute('aria-hidden', 'true');
+        clone.querySelectorAll('a, button').forEach((el) => { el.tabIndex = -1; });
+        clones.push(clone);
+      });
+    }
+    track.append(...clones);
+    slides = [...originals, ...clones];
+  }
+
+  function measure() {
+    const style = getComputedStyle(track);
+    cardW = originals[0].offsetWidth;
+    pitch = cardW + parseFloat(style.columnGap || '0');
+    startX = parseFloat(style.paddingLeft || '0');
+    // Enough cards to cover the viewport plus one hidden card on each side.
+    const needed = Math.ceil((track.clientWidth + 2 * pitch) / pitch);
+    buildClones(Math.max(1, Math.ceil(needed / originals.length)));
+    loopLen = slides.length * pitch;
+  }
+
+  const slotX = (i) => startX + mod(i * pitch - offset + pitch, loopLen) - pitch;
+
+  function render() {
+    const cu = cardW / 175;
+    const openX = openSlide ? slotX(slides.indexOf(openSlide)) : 0;
+    for (let i = 0; i < slides.length; i += 1) {
+      const slide = slides[i];
+      let x = slotX(i);
+      if (openSlide && slide !== openSlide && spread) {
+        x += (x < openX ? -PUSH_LEFT : PUSH_RIGHT) * cu * spread;
+      }
+      slide.style.transform = `translate3d(${x.toFixed(2)}px, 0, 0)`;
+    }
+    if (glow) {
+      glow.style.opacity = spread.toFixed(3);
+      glow.style.transform = `translate3d(${(openX + cardW / 2).toFixed(2)}px, 0, 0)`;
+    }
+  }
+
+  // Tweens
+
+  function setValue(key, value) {
+    if (key === 'offset') offset = value;
+    else spread = value;
+  }
+
+  function normalize() {
+    offset = mod(offset, loopLen);
+  }
+
+  function requestFrame() {
+    if (!rafId) rafId = requestAnimationFrame(frame);
+  }
+
+  function animate(key, to, ms, ease, done) {
+    const from = key === 'offset' ? offset : spread;
+    if (ms <= 0 || from === to) {
+      tweens.delete(key);
+      setValue(key, to);
+      if (key === 'offset') normalize();
+      render();
+      if (done) done();
+      return;
+    }
+    tweens.set(key, { from, to, t0: performance.now(), ms, ease, done });
+    requestFrame();
+  }
+
+  function frame(now) {
+    rafId = 0;
+    const finished = [];
+    tweens.forEach((tw, key) => {
+      const p = (now - tw.t0) / tw.ms;
+      setValue(key, tw.from + (tw.to - tw.from) * tw.ease(p));
+      if (p >= 1) finished.push([key, tw]);
+    });
+    finished.forEach(([key, tw]) => {
+      if (tweens.get(key) === tw) tweens.delete(key);
+      if (key === 'offset') normalize();
+    });
+    render();
+    finished.forEach(([, tw]) => { if (tw.done) tw.done(); });
+    if (tweens.size) requestFrame();
+  }
+
+  const targetOffset = () => (tweens.has('offset') ? tweens.get('offset').to : offset);
+
+  // Moves
+
+  function step(dir) {
+    if (openSlide) closeStory(() => {});
+    animate('offset', (Math.round(targetOffset() / pitch) + dir) * pitch, motionMs(GLIDE_MS), glideEase, scheduleAutoplay);
+  }
+
+  function openStory(slide) {
+    clearTimeout(autoplayTimer);
+    if (openSlide && openSlide !== slide) {
+      closeStory(() => openStory(slide));
+      return;
+    }
+    // Like the reference: the story opens from the second slot (first on phones).
+    const slot = phone.matches ? 0 : 1;
+    const base = (slides.indexOf(slide) - slot) * pitch;
+    const to = base + Math.round((targetOffset() - base) / loopLen) * loopLen;
+    const reveal = () => {
+      openSlide = slide;
+      isOpen = true;
+      slide.classList.add('is-open');
+      animate('spread', 1, motionMs(OPEN_MS), openEase);
+    };
+    if (Math.abs(to - offset) < 0.5 && !tweens.has('offset')) reveal();
+    else animate('offset', to, motionMs(GLIDE_MS), glideEase, reveal);
+  }
+
+  function closeStory(done) {
+    if (!openSlide) {
+      if (done) done();
+      return;
+    }
+    const slide = openSlide;
+    isOpen = false;
+    slide.classList.remove('is-open');
+    animate('spread', 0, motionMs(CLOSE_MS), glideEase, () => {
+      if (!isOpen && openSlide === slide) openSlide = null;
+      render();
+      if (done) done();
+      else scheduleAutoplay();
+    });
+  }
+
+  // Autoplay
+
+  function isPaused() {
+    return reduceMotion.matches || openSlide !== null || Object.values(pause).some(Boolean);
+  }
+
+  function scheduleAutoplay() {
+    clearTimeout(autoplayTimer);
+    if (tweens.has('offset') || isPaused()) return;
+    autoplayTimer = setTimeout(() => step(1), DWELL_MS);
+  }
+
+  function setPause(key, value) {
+    pause[key] = value;
+    scheduleAutoplay();
+  }
+
+  // Drag, swipe and fling
+
+  track.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0 || drag.active) return;
+    if (e.target.closest('.story__detail a')) return;
+    drag.active = true;
+    drag.id = e.pointerId;
+    drag.x0 = e.clientX;
+    drag.moved = false;
+    drag.samples = [[e.timeStamp, e.clientX]];
+  });
+
+  track.addEventListener('pointermove', (e) => {
+    if (!drag.active || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x0;
+    if (!drag.moved) {
+      if (Math.abs(dx) < 6) return;
+      // Capture only once it is a real drag, so plain clicks still open the story.
+      drag.moved = true;
+      tweens.delete('offset');
+      drag.offset0 = offset + dx;
+      try {
+        track.setPointerCapture(e.pointerId);
+      } catch {
+        // pointer already released; the drag still works without capture
+      }
+      root.classList.add('is-dragging');
+      setPause('drag', true);
+      if (openSlide) closeStory(() => {});
+    }
+    offset = drag.offset0 - dx;
+    drag.samples.push([e.timeStamp, e.clientX]);
+    while (drag.samples.length > 2 && e.timeStamp - drag.samples[0][0] > 100) drag.samples.shift();
+    render();
+  });
+
+  function endDrag(e) {
+    if (!drag.active || e.pointerId !== drag.id) return;
+    drag.active = false;
+    if (!drag.moved) return;
+    drag.suppressClick = true;
+    root.classList.remove('is-dragging');
+    const [t0, x0] = drag.samples[0];
+    const [t1, x1] = drag.samples[drag.samples.length - 1];
+    const resting = e.timeStamp - t1 > 80; // finger held still before release: no fling
+    const velocity = t1 > t0 && !resting ? -(x1 - x0) / (t1 - t0) : 0; // offset px per ms
+    const reach = 4 * pitch;
+    const projected = offset + Math.max(-reach, Math.min(reach, velocity * FLING_PROJECTION));
+    animate('offset', Math.round(projected / pitch) * pitch, motionMs(GLIDE_MS), glideEase, scheduleAutoplay);
+    setPause('drag', false);
+  }
+
+  track.addEventListener('pointerup', endDrag);
+  track.addEventListener('pointercancel', endDrag);
+  track.addEventListener('dragstart', (e) => e.preventDefault());
+
+  // Click a card to open it; click it again, press Esc or click the wall to close.
+  track.addEventListener('click', (e) => {
+    if (drag.suppressClick) {
+      drag.suppressClick = false;
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    const story = e.target.closest('.story');
+    if (!story) return;
+    e.preventDefault();
+    const slide = story.closest('.carousel__slide');
+    if (slide === openSlide && isOpen) closeStory();
+    else openStory(slide);
+  }, true);
+
+  document.addEventListener('click', (e) => {
+    if (!isOpen || e.target.closest('.carousel__slide.is-open, .story')) return;
+    closeStory();
+  });
+
+  // Horizontal wheel / trackpad moves the stories; vertical wheel scrolls the page.
+  let wheelAcc = 0;
+  let wheelLockUntil = 0;
+  root.addEventListener('wheel', (e) => {
+    const horizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+    const delta = horizontal ? e.deltaX : (e.shiftKey ? e.deltaY : 0);
+    if (!delta) return;
+    e.preventDefault();
+    const now = performance.now();
+    if (now < wheelLockUntil) return;
+    wheelAcc += delta;
+    if (Math.abs(wheelAcc) >= 30) {
+      step(Math.sign(wheelAcc));
+      wheelAcc = 0;
+      wheelLockUntil = now + GLIDE_MS;
+    }
+  }, { passive: false });
+
+  // Keyboard
+  root.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') step(1);
+    else if (e.key === 'ArrowLeft') step(-1);
+    else if (e.key === 'Escape' && isOpen) closeStory();
+    else return;
+    e.preventDefault();
+  });
+
+  // Focus: pause, and bring a focused card that sits off-screen into the first slot.
+  root.addEventListener('focusin', (e) => {
+    setPause('focus', true);
+    const slide = e.target.closest('.carousel__slide');
+    if (!slide || slide === openSlide) return;
+    const i = slides.indexOf(slide);
+    const rect = slide.getBoundingClientRect();
+    const box = track.getBoundingClientRect();
+    if (i < 0 || (rect.left >= box.left && rect.right <= box.right)) return;
+    if (openSlide) closeStory(() => {});
+    const k = Math.round((targetOffset() - i * pitch) / loopLen);
+    animate('offset', i * pitch + k * loopLen, motionMs(GLIDE_MS), glideEase, scheduleAutoplay);
+  });
+
+  root.addEventListener('focusout', (e) => {
+    if (!root.contains(e.relatedTarget)) setPause('focus', false);
+  });
+
+  // Focusing a card can make the browser scroll the clipped track; keep it pinned.
+  track.addEventListener('scroll', () => {
+    track.scrollLeft = 0;
+  });
+
+  track.addEventListener('pointerenter', (e) => {
+    if (e.pointerType === 'mouse') setPause('hover', true);
+  });
+  track.addEventListener('pointerleave', (e) => {
+    if (e.pointerType === 'mouse') setPause('hover', false);
+  });
+
+  document.addEventListener('visibilitychange', () => setPause('hidden', document.hidden));
+  reduceMotion.addEventListener('change', scheduleAutoplay);
+
+  if (toggle) {
+    toggle.addEventListener('click', () => {
+      const paused = !pause.user;
+      toggle.setAttribute('aria-pressed', String(paused));
+      toggle.textContent = paused ? 'Play stories' : 'Pause stories';
+      setPause('user', paused);
+    });
+  }
+
+  // Init + resize: keep the same card in the first slot, close any open story.
+  let lastWidth = -1;
+  function relayout() {
+    if (track.clientWidth === lastWidth) return;
+    lastWidth = track.clientWidth;
+    const index = pitch ? Math.round(targetOffset() / pitch) : 0;
+    tweens.clear();
+    if (openSlide) openSlide.classList.remove('is-open');
+    openSlide = null;
+    isOpen = false;
+    spread = 0;
+    measure();
+    offset = mod(index * pitch, loopLen);
+    render();
+    scheduleAutoplay();
+  }
+
+  relayout();
+  new ResizeObserver(relayout).observe(track);
+})();

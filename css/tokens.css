@@ -1,0 +1,102 @@
+/* ScrollStudio design tokens
+   Derived from the reference GIF (800×600, 136 frames at 25 fps).
+   1u = 1px of the reference frame; 1cu = 1px of a 175px-wide reference card. */
+
+:root {
+  /* Scale. Desktop: the whole frame fits the screen, but never shrinks below 1000 frame px per screen width. */
+  --u: max(min(100vw / 800, 100vh / 600), 100vw / 1000);
+  --u: max(min(100vw / 800, 100svh / 600), 100vw / 1000);
+
+  /* Wall */
+  --wall-top: #E9E9E8;
+  --wall-mid: #E1E1E0;
+  --wall-bottom: #D7D6D5;
+  --wall-light: rgb(255 255 255 / 0.38);
+  --wall-glow: rgb(250 250 250 / 0.85);
+
+  /* Surfaces */
+  --card: #FBFBFA;
+
+  /* Ink */
+  --ink-900: #2B2B2D;
+  --ink-700: #48484B;
+  --ink-500: #76767A;
+
+  /* Brand mark (Stories icon) */
+  --brand-violet: #8E5EEA;
+  --brand-gradient: linear-gradient(135deg, #3D55CF 0%, #6A5BE6 38%, #9A62F6 41%, #C46BFF 100%);
+
+  /* Action: the "+" that replaces the avatar when a story opens */
+  --coral: #FD767E;
+
+  /* Shadow */
+  --shadow-ink: 34 31 29;
+
+  /* Type */
+  --font: "Urbanist", "Gilroy", "Sofia Pro", ui-sans-serif, system-ui, sans-serif;
+  --fs-meta: max(11px, calc(var(--u) * 9));
+  --fs-display: max(20px, calc(var(--u) * 20));
+  --fs-tags: max(11px, calc(var(--u) * 9.5));
+  --fw-light: 300;
+  --fw-regular: 400;
+
+  /* Room geometry (top-anchored, as in the reference frame) */
+  --gutter: calc(var(--u) * 45);
+  --header-h: calc(var(--u) * 68);
+  --room-h: calc(var(--u) * 730);
+  --card-w: calc(var(--u) * 175);
+  --card-gap: calc(var(--u) * 60);
+  --card-top: calc(var(--u) * 107);
+  --track-pad-top: calc(var(--u) * 92);
+  --track-pad-bottom: calc(var(--u) * 80);
+  --intro-top: calc(var(--u) * 455);
+  --scene-top: calc(var(--u) * 360);
+  --scene-w: calc(var(--u) * 460);
+
+  /* Card */
+  --card-h: calc(var(--card-w) * 240 / 175);
+  --cu: calc(var(--card-w) / 175);
+  --radius-card: calc(var(--cu) * 4);
+  --radius-mark: calc(var(--u) * 4);
+
+  /* Motion (durations mirror js/main.js, measured from the GIF) */
+  --ease-glide: linear(0, 0.077, 0.166, 0.255, 0.345, 0.43, 0.514, 0.6, 0.677, 0.749, 0.813, 0.872, 0.923, 0.962, 0.991, 1);
+  --ease-open: linear(0, 0.256, 0.388, 0.519, 0.638, 0.75, 0.844, 0.925, 0.981, 1);
+  --dur-open: 360ms;
+  --dur-fade: 200ms;
+  --dur-shadow: 480ms;
+  --dur-hover: 400ms;
+}
+
+/* Tablet and small windows: the reference frame scaled to the width, exactly */
+@media (max-width: 1023px) {
+  :root {
+    --u: calc(100vw / 800);
+  }
+}
+
+/* Portrait tablets and tall windows: bigger cards, the room fills the height */
+@media (min-width: 641px) and (orientation: portrait) {
+  :root {
+    --u: min(100vw / 620, 100vh / 740);
+    --u: min(100vw / 620, 100svh / 740);
+    /* the desk is relatively wider here: lift the intro into the gap above it */
+    --intro-top: calc(var(--u) * 372);
+  }
+}
+
+/* Phone: stacked layout */
+@media (max-width: 640px) {
+  :root {
+    --u: calc(100vw / 400);
+    --fs-meta: 13px;
+    --fs-display: 26px;
+    --fs-tags: 13px;
+    --gutter: 24px;
+    --card-w: min(58vw, 300px);
+    --card-gap: 6vw;
+    --track-pad-top: calc(var(--cu) * 70);
+    --track-pad-bottom: calc(var(--cu) * 70);
+    --scene-w: 116vw;
+  }
+}

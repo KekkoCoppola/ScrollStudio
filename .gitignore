@@ -1,0 +1,6 @@
+# Git Bash / MSYS crash dumps
+*.stackdump
+
+# OS clutter
+.DS_Store
+Thumbs.db

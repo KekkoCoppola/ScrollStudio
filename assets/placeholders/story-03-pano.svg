@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 400">
+  <!-- PLACEHOLDER · Apogee panorama (transparent) -->
+  <defs>
+    <linearGradient id="rock" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4A3E3D"/><stop offset=".5" stop-color="#8E7E7A"/><stop offset="1" stop-color="#574A48"/></linearGradient>
+    <linearGradient id="rock2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6E5E5A"/><stop offset=".45" stop-color="#A08E88"/><stop offset="1" stop-color="#5E504D"/></linearGradient>
+    <linearGradient id="sink" x1="0" y1="0" x2="0" y2="1"><stop offset=".55" stop-color="#FFFFFF"/><stop offset=".85" stop-color="#000000"/></linearGradient>
+    <mask id="dissolve"><rect width="880" height="400" fill="url(#sink)"/></mask>
+    <filter id="mist" x="-30%" y="-100%" width="160%" height="300%"><feGaussianBlur stdDeviation="22"/></filter>
+  </defs>
+  <!-- rocks rise out of the mist: they fade to nothing toward the bottom -->
+  <g mask="url(#dissolve)">
+    <path d="M16 380 L22 360 L30 348 L38 346 L46 336 L54 334 L62 346 L70 380 Z" fill="url(#rock2)" opacity=".75"/>
+    <path d="M190 400 L196 330 L192 300 L200 250 L204 200 L210 160 L216 120 L222 96 L230 76 L238 68 L244 78 L248 100 L254 130 L256 170 L262 210 L260 240 L268 280 L266 320 L276 400 Z" fill="url(#rock)"/>
+    <path d="M262 400 L266 330 L272 290 L280 262 L288 240 L296 236 L302 226 L310 222 L316 234 L322 250 L326 272 L334 300 L340 400 Z" fill="url(#rock)" opacity=".92"/>
+    <path d="M336 400 L342 320 L350 292 L358 270 L366 262 L374 252 L382 248 L390 256 L396 272 L404 290 L410 320 L416 400 Z" fill="url(#rock2)" opacity=".88"/>
+    <path d="M410 400 L418 330 L426 304 L434 290 L442 282 L452 286 L458 276 L466 274 L474 286 L480 306 L488 340 L494 400 Z" fill="url(#rock2)" opacity=".82"/>
+    <path d="M508 400 L514 340 L522 310 L532 296 L542 300 L550 320 L556 400 Z" fill="url(#rock2)" opacity=".85"/>
+    <path d="M548 400 L560 330 L572 280 L584 236 L596 196 L610 150 L624 110 L636 78 L648 50 L660 34 L670 26 L680 30 L688 44 L694 64 L700 92 L708 120 L720 150 L734 176 L748 196 L760 222 L772 254 L786 290 L800 330 L812 400 Z" fill="url(#rock)"/>
+    <path d="M690 400 L700 330 L710 300 L722 284 L734 276 L746 286 L756 300 L766 330 L776 400 Z" fill="url(#rock2)" opacity=".85"/>
+  </g>
+  <g fill="#FFFFFF" filter="url(#mist)">
+    <ellipse cx="440" cy="318" rx="390" ry="30" opacity=".9"/>
+    <ellipse cx="210" cy="300" rx="170" ry="24" opacity=".55"/>
+    <ellipse cx="680" cy="296" rx="190" ry="24" opacity=".55"/>
+  </g>
+</svg>

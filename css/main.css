@@ -1,0 +1,643 @@
+/* ScrollStudio — Stories screen */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  background: var(--wall-bottom);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
+  margin: 0;
+  font-family: var(--font);
+  font-weight: var(--fw-regular);
+  color: var(--ink-700);
+  background-color: var(--wall-bottom);
+  background-image:
+    radial-gradient(120% 70% at 50% 0%, var(--wall-light), transparent 62%),
+    linear-gradient(180deg, var(--wall-top) 0%, var(--wall-mid) 55%, var(--wall-bottom) 100%);
+  background-size: 100% var(--room-h);
+  background-repeat: no-repeat;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand-violet);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Room: the reference frame, anchored to the top so the desk sits right under the stories */
+
+.room {
+  position: relative;
+  flex: none;
+  height: var(--room-h);
+  overflow: hidden;
+}
+
+/* Topbar */
+
+.topbar {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header-h);
+  padding-inline: var(--gutter);
+  font-size: var(--fs-meta);
+  line-height: 1;
+  color: var(--ink-700);
+}
+
+.topbar__meta {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 18);
+}
+
+.topbar__climate {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--u) * 8);
+}
+
+.topbar__nav {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 19);
+}
+
+.topbar__nav a {
+  position: relative;
+  padding-block: calc(var(--u) * 4);
+  transition: color var(--dur-hover) ease-out;
+}
+
+.topbar__nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-hover) ease-out;
+}
+
+.topbar__nav a:hover {
+  color: var(--ink-900);
+}
+
+.topbar__nav a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.topbar__nav .topbar__home::after {
+  content: none;
+}
+
+.icon {
+  display: block;
+  width: max(14px, calc(var(--u) * 13));
+  height: max(14px, calc(var(--u) * 13));
+  flex: none;
+}
+
+/* Carousel */
+
+.carousel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--card-top) - var(--track-pad-top));
+  z-index: 1;
+}
+
+.carousel__track {
+  position: relative;
+  display: flex;
+  gap: var(--card-gap);
+  margin: 0;
+  padding: var(--track-pad-top) var(--gutter) var(--track-pad-bottom);
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.carousel__track::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel__slide {
+  position: relative;
+  flex: 0 0 var(--card-w);
+  height: var(--card-h);
+  scroll-snap-align: start;
+}
+
+/* Enhanced by js/main.js: slides sit on an endless right→left loop */
+.carousel.is-enhanced .carousel__track {
+  display: block;
+  height: calc(var(--card-h) + var(--track-pad-top) + var(--track-pad-bottom));
+  overflow: hidden;
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.carousel.is-dragging .carousel__track {
+  cursor: grabbing;
+}
+
+.carousel.is-enhanced .carousel__slide {
+  position: absolute;
+  top: var(--track-pad-top);
+  left: 0;
+  width: var(--card-w);
+  will-change: transform;
+}
+
+.carousel__slide.is-open {
+  z-index: 2;
+}
+
+/* Light that gathers on the wall behind an opened story */
+.carousel__glow {
+  display: none;
+}
+
+.carousel.is-enhanced .carousel__glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: calc(var(--cu) * 760);
+  height: 100%;
+  margin-left: calc(var(--cu) * -380);
+  background: radial-gradient(closest-side, var(--wall-glow), rgb(250 250 250 / 0));
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.carousel__toggle {
+  position: absolute;
+  top: calc(var(--u) * 8);
+  left: var(--gutter);
+  z-index: 3;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--ink-900);
+  background: var(--card);
+  border: 0;
+  border-radius: 999px;
+  box-shadow: 0 2px 10px rgb(var(--shadow-ink) / 0.12);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.carousel__toggle:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Story card */
+
+.story {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  isolation: isolate;
+  border-radius: var(--radius-card);
+  color: var(--ink-900);
+  box-shadow:
+    0 calc(var(--cu) * 22) calc(var(--cu) * 38) calc(var(--cu) * -8) rgb(var(--shadow-ink) / 0.3),
+    0 calc(var(--cu) * 2) calc(var(--cu) * 6) rgb(var(--shadow-ink) / 0.06);
+  transition:
+    transform var(--dur-hover) ease-out,
+    box-shadow var(--dur-shadow) var(--ease-glide);
+  -webkit-user-drag: none;
+}
+
+.story:hover {
+  transform: translateY(calc(var(--cu) * -3));
+}
+
+.carousel.is-dragging .story:hover,
+.carousel__slide.is-open .story:hover {
+  transform: none;
+}
+
+.story__paper {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--card);
+  transition: opacity var(--dur-fade) linear;
+}
+
+.story__media {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 round var(--radius-card));
+  transition: clip-path var(--dur-open) var(--ease-open);
+}
+
+.story__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Pano and pop-out art is placed in card units: --l (left), --t (top), --w (width) */
+.story__pano,
+.story__pop {
+  position: absolute;
+  left: calc(var(--l) * var(--cu));
+  top: calc(var(--t) * var(--cu));
+  width: calc(var(--w) * var(--cu));
+  max-width: none;
+  height: auto;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.story__pop {
+  z-index: 1;
+}
+
+.story__pop--behind {
+  z-index: -1;
+}
+
+.story__text {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: calc(var(--cu) * 31) calc(var(--cu) * 12) 0;
+  text-align: center;
+}
+
+.story__title {
+  font-size: calc(var(--cu) * 17);
+  font-weight: var(--fw-light);
+  line-height: 1.2;
+}
+
+.story__author {
+  margin-top: calc(var(--cu) * 3);
+  font-size: max(10px, calc(var(--cu) * 10.5));
+  line-height: 1.2;
+  color: var(--ink-700);
+}
+
+.story__glyph,
+.point__icon {
+  display: block;
+  width: calc(var(--cu) * 12);
+  height: calc(var(--cu) * 12);
+  color: var(--ink-700);
+}
+
+.story__glyph {
+  position: absolute;
+  top: calc(var(--cu) * 13);
+  left: 50%;
+  z-index: 2;
+  margin-left: calc(var(--cu) * -6);
+  opacity: 0;
+  transition: opacity var(--dur-fade) linear;
+}
+
+.story__avatar {
+  position: absolute;
+  left: calc(var(--cu) * 22);
+  bottom: calc(var(--cu) * 21);
+  z-index: 2;
+  width: calc(var(--cu) * 26);
+  height: calc(var(--cu) * 26);
+  border-radius: 50%;
+  object-fit: cover;
+  transition:
+    opacity var(--dur-fade) linear,
+    transform var(--dur-open) var(--ease-open);
+  -webkit-user-drag: none;
+}
+
+/* Opened story: the frame dissolves into the wall, the scene spreads out, chapters appear */
+
+.story__detail {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  visibility: hidden;
+  transition: visibility 0s linear var(--dur-open);
+}
+
+.point {
+  position: absolute;
+  left: calc(var(--x) * var(--cu));
+  top: calc(var(--y) * var(--cu));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--ink-900);
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, calc(var(--cu) * 6));
+  transition:
+    opacity 160ms linear,
+    transform var(--dur-open) var(--ease-open);
+  pointer-events: auto;
+}
+
+.point__title {
+  margin-top: calc(var(--cu) * 6);
+  font-size: calc(var(--cu) * 16.5);
+  font-weight: var(--fw-light);
+  line-height: 1.2;
+}
+
+.point__author {
+  margin-top: calc(var(--cu) * 3);
+  font-size: max(10px, calc(var(--cu) * 10));
+  line-height: 1.2;
+  color: var(--ink-700);
+}
+
+.point--lg .point__title {
+  margin-top: calc(var(--cu) * 7);
+  font-size: calc(var(--cu) * 26);
+}
+
+.point--lg .point__author {
+  margin-top: calc(var(--cu) * 1);
+}
+
+.point:hover .point__title {
+  color: #000;
+}
+
+.story__plus {
+  position: absolute;
+  left: calc(var(--cu) * 18);
+  top: calc(var(--cu) * 189);
+  display: grid;
+  place-items: center;
+  width: calc(var(--cu) * 34);
+  height: calc(var(--cu) * 34);
+  color: #FFFFFF;
+  background: var(--coral);
+  border-radius: 50%;
+  box-shadow: 0 calc(var(--cu) * 6) calc(var(--cu) * 14) calc(var(--cu) * -4) rgb(253 118 126 / 0.55);
+  opacity: 0;
+  transform: scale(0.5);
+  transition:
+    opacity var(--dur-fade) linear,
+    transform var(--dur-open) var(--ease-open);
+  pointer-events: auto;
+}
+
+.story__plus svg {
+  width: calc(var(--cu) * 10);
+  height: calc(var(--cu) * 10);
+}
+
+.carousel__slide.is-open .story--pano {
+  box-shadow:
+    0 calc(var(--cu) * 22) calc(var(--cu) * 38) calc(var(--cu) * -8) rgb(var(--shadow-ink) / 0),
+    0 calc(var(--cu) * 2) calc(var(--cu) * 6) rgb(var(--shadow-ink) / 0);
+}
+
+.carousel__slide.is-open .story--pano .story__paper {
+  opacity: 0;
+}
+
+.carousel__slide.is-open .story--pano .story__media {
+  clip-path: inset(-20% -110% -6% -50% round 0);
+}
+
+.carousel__slide.is-open .story__glyph {
+  opacity: 1;
+}
+
+.carousel__slide.is-open .story__avatar {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.carousel__slide.is-open .story__detail {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.carousel__slide.is-open .point {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition-delay: calc(160ms + var(--d, 0) * 60ms);
+}
+
+.carousel__slide.is-open .story__plus {
+  opacity: 1;
+  transform: scale(1);
+  transition-delay: 120ms;
+}
+
+/* Section intro */
+
+.intro {
+  position: absolute;
+  top: var(--intro-top);
+  left: var(--gutter);
+  z-index: 2;
+}
+
+.intro__mark {
+  display: block;
+  width: max(20px, calc(var(--u) * 22));
+  height: max(20px, calc(var(--u) * 22));
+  border-radius: var(--radius-mark);
+  background: var(--brand-gradient);
+  box-shadow: 0 calc(var(--u) * 6) calc(var(--u) * 14) calc(var(--u) * -4) rgb(110 80 230 / 0.45);
+}
+
+.intro__title {
+  margin: calc(var(--u) * 8) 0 0;
+  font-size: var(--fs-display);
+  font-weight: var(--fw-light);
+  line-height: 1.2;
+  color: var(--ink-900);
+}
+
+.intro__tags {
+  margin: calc(var(--u) * 4) 0 0;
+  font-size: var(--fs-tags);
+  line-height: 1.3;
+  color: var(--ink-700);
+}
+
+/* Habitat scene: desk, chair, plant, down to the floor */
+
+.scene {
+  position: absolute;
+  top: var(--scene-top);
+  left: 50%;
+  z-index: 2;
+  width: var(--scene-w);
+  margin: 0;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.scene img {
+  width: 100%;
+  height: auto;
+}
+
+/* Footer */
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: auto;
+  padding: max(20px, calc(var(--u) * 22)) var(--gutter);
+  font-size: var(--fs-meta);
+  color: var(--ink-700);
+}
+
+.footer__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink-900);
+}
+
+.footer__brand .intro__mark {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  box-shadow: none;
+}
+
+/* Phone: stack header, stories, intro, scene */
+
+@media (max-width: 640px) {
+  .room {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+
+  .topbar {
+    position: static;
+    flex-wrap: wrap;
+    row-gap: 16px;
+    height: auto;
+    padding: 22px var(--gutter) 0;
+  }
+
+  .topbar__meta {
+    gap: 16px;
+  }
+
+  .topbar__climate {
+    gap: 8px;
+  }
+
+  .topbar__nav {
+    width: 100%;
+    gap: 22px;
+  }
+
+  .topbar__home {
+    margin-left: auto;
+  }
+
+  .carousel {
+    position: relative;
+    top: auto;
+    margin-top: calc(var(--cu) * -38);
+  }
+
+  .point {
+    left: calc(var(--xs, var(--x)) * var(--cu));
+    top: calc(var(--ys, var(--y)) * var(--cu));
+  }
+
+  .intro {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin-top: calc(var(--cu) * -40);
+    padding-inline: var(--gutter);
+  }
+
+  .scene {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin: -64px calc((100vw - var(--scene-w)) / 2) 0;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+  }
+}

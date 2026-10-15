@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 480">
+  <!-- PLACEHOLDER · Design -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FAFAF9"/><stop offset="1" stop-color="#EFEEEC"/></linearGradient>
+    <linearGradient id="cone" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFA46E"/><stop offset=".5" stop-color="#F4653E"/><stop offset="1" stop-color="#D3402B"/></linearGradient>
+    <linearGradient id="bar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5A5A5F"/><stop offset=".45" stop-color="#202023"/><stop offset="1" stop-color="#0D0D0F"/></linearGradient>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10"/></filter>
+  </defs>
+  <rect width="350" height="480" fill="url(#bg)"/>
+  <path d="M230 360 L350 430 V480 H260 Z" fill="#3B2A24" opacity=".14" filter="url(#soft)"/>
+  <path d="M172 226 C168 300 110 392 0 452 V480 H350 V432 C266 378 198 304 190 226 Z" fill="url(#cone)"/>
+  <path d="M174 236 C170 290 148 338 108 386" stroke="#FFC4A0" stroke-width="3" opacity=".45" fill="none"/>
+  <g transform="rotate(-13 180 200)">
+    <rect x="102" y="186" width="156" height="30" rx="15" fill="url(#bar)"/>
+    <ellipse cx="110" cy="201" rx="6" ry="14.5" fill="#323236"/>
+    <rect x="168" y="181" width="22" height="40" rx="9" fill="#F0613C"/>
+  </g>
+</svg>

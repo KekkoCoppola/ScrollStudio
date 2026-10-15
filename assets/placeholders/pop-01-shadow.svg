@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 240">
+  <!-- PLACEHOLDER · shadow that leaves the Design card -->
+  <defs><filter id="b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14"/></filter></defs>
+  <path d="M40 30 L150 90 L250 200 L150 210 L40 150 Z" fill="#3B302C" opacity=".2" filter="url(#b)"/>
+</svg>

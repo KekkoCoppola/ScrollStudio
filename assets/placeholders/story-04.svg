@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 480">
+  <!-- PLACEHOLDER · Milkbath -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FAFAFA"/><stop offset="1" stop-color="#F0F0EF"/></linearGradient>
+    <radialGradient id="skin" cx=".42" cy=".4" r=".7"><stop offset="0" stop-color="#F7E2D8"/><stop offset=".6" stop-color="#ECC6B6"/><stop offset="1" stop-color="#D9A994"/></radialGradient>
+    <filter id="milk" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="9"/></filter>
+  </defs>
+  <rect width="350" height="480" fill="url(#bg)"/>
+  <ellipse cx="244" cy="236" rx="122" ry="196" fill="url(#skin)"/>
+  <path d="M256 480 C252 420 266 372 294 350 C320 332 342 340 350 352 V480 Z" fill="url(#skin)"/>
+  <path d="M0 290 C60 262 124 292 156 344 C176 386 146 440 124 480 H0 Z" fill="#FFFFFF" opacity=".95" filter="url(#milk)"/>
+  <ellipse cx="110" cy="420" rx="124" ry="72" fill="#FFFFFF" opacity=".9" filter="url(#milk)"/>
+</svg>
