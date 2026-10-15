@@ -83,20 +83,21 @@ Il carosello mostra i progetti: Bouncical e TopFratmRanks. Ogni card è `class="
 
 | File | Uso | Formato |
 |---|---|---|
-| `assets/projects/<progetto>.mp4` | video della card, in loop e muto | H.264 verticale 9:16, senza audio, `+faststart`, ≤720px di larghezza |
+| `assets/projects/<progetto>.mp4` | video della card, in loop e muto | H.264 verticale 9:16, 480px di larghezza, senza audio, `+faststart` |
 | `assets/projects/<progetto>.jpg` | poster: primo frame, mostrato prima del play e con `prefers-reduced-motion` | JPG alla stessa risoluzione |
 | `assets/projects/<progetto>-logo.svg` | logo nell'avatar in basso a sinistra (cerchio di 26cu, anello chiaro sul video) | SVG quadrato 128, contenuto entro il cerchio inscritto, niente scritte |
 
 Loghi: `bouncical-logo.svg` è il marchio di `logo.png` del repo ridisegnato per l'avatar (senza scritta, linee e palline più spesse); `topfratmranks-logo.svg` è un podio tricolore con corona, provvisorio finché il progetto non ha un logo suo.
 
-- `preload="none"`: [`js/main.js`](js/main.js) avvia solo i video visibili (anche le copie del loop) e mette in pausa gli altri.
+- Un solo `<video>` per progetto scarica e decodifica (`preload="none"`); le copie del carosello sono `<canvas>` che ne ricopiano i frame (stesso taglio di `object-fit: cover` e `object-position`). Così con 2 progetti restano 2 decodifiche e 2 download, qualunque sia la larghezza dello schermo.
+- I video partono dopo l'evento `load` (prima pagina, poster e loghi), solo se una card del progetto è visibile, mai con `prefers-reduced-motion`. Logica in [`js/main.js`](js/main.js).
 - Aperta la card: "Provalo" → sito live, "Codice" → repo GitHub, il bottone corallo (↗) apre il sito.
 - Per aggiungere un progetto: copia una `<li class="carousel__slide">` di un progetto e cambia video, poster, testi (italiano e `data-en`) e link.
 
 Ricodifica dal video sorgente:
 
 ```sh
-ffmpeg -i sorgente.mp4 -vf "scale=720:-2,fps=30" -c:v libx264 -preset slow -crf 27 -pix_fmt yuv420p -an -movflags +faststart assets/projects/nome.mp4
+ffmpeg -i sorgente.mp4 -vf "scale=480:-2,fps=30" -c:v libx264 -preset slow -crf 28 -pix_fmt yuv420p -an -movflags +faststart assets/projects/nome.mp4
 ffmpeg -i assets/projects/nome.mp4 -frames:v 1 -q:v 4 assets/projects/nome.jpg
 ```
 

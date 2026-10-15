@@ -118,6 +118,7 @@
 
   function buildClones(sets) {
     track.querySelectorAll('[data-clone]').forEach((node) => node.remove());
+    projects.forEach((project) => { project.mirrors = []; });
     const clones = [];
     for (let s = 1; s < sets; s += 1) {
       originals.forEach((slide) => {
@@ -125,6 +126,7 @@
         clone.dataset.clone = '';
         clone.setAttribute('aria-hidden', 'true');
         clone.querySelectorAll('a, button').forEach((el) => { el.tabIndex = -1; });
+        if (projects.has(slide)) mirror(clone, projects.get(slide));
         clones.push(clone);
       });
     }
@@ -270,11 +272,75 @@
     scheduleAutoplay();
   }
 
-  // Project videos: only the cards on screen play (clones included), never with reduced motion.
+  // Project videos: each project downloads and decodes one <video>, in its original card; the cards
+  // cloned for the loop get a <canvas> that copies its frames. A video plays once the page has
+  // loaded, only while one of its cards is on screen, and never with reduced motion.
 
-  function setPlaying(video, visible) {
-    if (visible && !reduceMotion.matches) {
-      video.play().catch(() => {}); // playback refused: the poster stays
+  const MIRROR_FRAME_MS = 1000 / 30; // the videos are 30 fps
+  const projects = new Map(); // original slide → { video, focus, mirrors, visible, drawnAt }
+  originals.forEach((slide) => {
+    const video = slide.querySelector('video');
+    if (!video) return;
+    const focus = getComputedStyle(video).objectPosition.split(' ').map((v) => parseFloat(v) / 100);
+    projects.set(slide, { video, focus, mirrors: [], visible: new Set(), drawnAt: 0 });
+  });
+  const surfaceOwner = new Map(); // video or canvas → its project
+  let pageLoaded = document.readyState === 'complete';
+  let mirrorId = 0;
+
+  function mirror(clone, project) {
+    const video = clone.querySelector('video');
+    const canvas = document.createElement('canvas');
+    canvas.className = video.className;
+    canvas.setAttribute('aria-hidden', 'true');
+    // the poster shows until the first frame is copied
+    canvas.style.background = `url("${project.video.poster}") ${project.focus[0] * 100}% ${project.focus[1] * 100}% / cover`;
+    video.replaceWith(canvas);
+    project.mirrors.push(canvas);
+  }
+
+  function sizeMirrors() {
+    const w = Math.round(cardW * Math.min(window.devicePixelRatio || 1, 2));
+    const h = Math.round((w * 240) / 175);
+    projects.forEach((project) => {
+      project.drawnAt = 0;
+      project.mirrors.forEach((canvas) => {
+        canvas.width = w;
+        canvas.height = h;
+      });
+    });
+  }
+
+  // Same crop as object-fit: cover with the video's object-position.
+  function paint(canvas, { video, focus }) {
+    const scale = Math.max(canvas.width / video.videoWidth, canvas.height / video.videoHeight);
+    const sw = canvas.width / scale;
+    const sh = canvas.height / scale;
+    const sx = (video.videoWidth - sw) * focus[0];
+    const sy = (video.videoHeight - sh) * focus[1];
+    canvas.getContext('2d').drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+  }
+
+  function drawMirrors(now) {
+    mirrorId = 0;
+    let playing = false;
+    projects.forEach((project) => {
+      if (project.video.paused) return;
+      playing = true;
+      if (project.video.readyState < 2 || now - project.drawnAt < MIRROR_FRAME_MS - 2) return;
+      project.drawnAt = now;
+      project.mirrors.forEach((canvas) => {
+        if (project.visible.has(canvas)) paint(canvas, project);
+      });
+    });
+    if (playing) mirrorId = requestAnimationFrame(drawMirrors);
+  }
+
+  function updatePlayback(project) {
+    const { video } = project;
+    if (pageLoaded && project.visible.size && !reduceMotion.matches) {
+      video.play().catch(() => {}); // playback refused: the posters stay
+      if (!mirrorId) mirrorId = requestAnimationFrame(drawMirrors);
     } else if (!video.paused) {
       video.pause(); // pausing an idle video would start loading it
     }
@@ -282,19 +348,41 @@
 
   const videoObserver = 'IntersectionObserver' in window
     ? new IntersectionObserver((entries) => {
-      entries.forEach((entry) => setPlaying(entry.target, entry.isIntersecting));
+      const changed = new Set();
+      entries.forEach(({ target, isIntersecting }) => {
+        const project = surfaceOwner.get(target);
+        if (!project) return;
+        if (isIntersecting) project.visible.add(target);
+        else project.visible.delete(target);
+        changed.add(project);
+      });
+      changed.forEach(updatePlayback);
     })
     : null;
 
   function watchVideos() {
-    const videos = track.querySelectorAll('video');
+    surfaceOwner.clear();
+    projects.forEach((project) => {
+      project.visible.clear();
+      [project.video, ...project.mirrors].forEach((surface) => surfaceOwner.set(surface, project));
+    });
+    sizeMirrors();
     if (!videoObserver) {
-      videos.forEach((video) => setPlaying(video, true));
+      surfaceOwner.forEach((project, surface) => project.visible.add(surface));
+      projects.forEach(updatePlayback);
       return;
     }
-    // Observing again reports every video's current visibility straight away.
+    // Observing again reports every surface's current visibility straight away.
     videoObserver.disconnect();
-    videos.forEach((video) => videoObserver.observe(video));
+    surfaceOwner.forEach((project, surface) => videoObserver.observe(surface));
+  }
+
+  // Videos wait for the page itself: fonts, posters and logos come first.
+  if (!pageLoaded) {
+    window.addEventListener('load', () => {
+      pageLoaded = true;
+      projects.forEach(updatePlayback);
+    }, { once: true });
   }
 
   // Drag, swipe and fling

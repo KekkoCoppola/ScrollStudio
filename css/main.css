@@ -445,7 +445,8 @@ a {
   mask-image: linear-gradient(#000 50%, transparent);
 }
 
-video.story__image {
+video.story__image,
+canvas.story__image {
   pointer-events: none;
 }
 
