@@ -1,15 +1,61 @@
 (() => {
   'use strict';
 
-  // Topbar date, written the way the design does: "Friday, 10 aug"
+  // Language: the page is written in Italian; English sits next to each text in data-en
+  // (and data-en-<attribute> for attributes). The first switch keeps the Italian in data-it.
+  const LANG_KEY = 'scrollstudio-lang';
+  const LOCALES = { it: 'it-IT', en: 'en-GB' };
+  const TRANSLATED_ATTRS = ['aria-label', 'aria-roledescription', 'content'];
+  let lang = 'it';
+
+  // Topbar date, written the way the design does: "Friday, 10 aug" / "Venerdì, 10 ago"
   const dateEl = document.querySelector('[data-today]');
-  if (dateEl) {
+  function renderDate() {
+    if (!dateEl) return;
     const now = new Date();
-    const weekday = now.toLocaleDateString('en-GB', { weekday: 'long' });
-    const month = now.toLocaleDateString('en-GB', { month: 'short' }).toLowerCase().replace('.', '');
-    dateEl.textContent = `${weekday}, ${now.getDate()} ${month}`;
+    const weekday = now.toLocaleDateString(LOCALES[lang], { weekday: 'long' });
+    const month = now.toLocaleDateString(LOCALES[lang], { month: 'short' }).toLowerCase().replace('.', '');
+    dateEl.textContent = `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)}, ${now.getDate()} ${month}`;
     dateEl.dateTime = now.toISOString().slice(0, 10);
   }
+
+  function setLanguage(next) {
+    lang = next === 'en' ? 'en' : 'it';
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-en]').forEach((el) => {
+      if (el.dataset.it === undefined) el.dataset.it = el.textContent;
+      el.textContent = el.dataset[lang];
+    });
+    TRANSLATED_ATTRS.forEach((attr) => {
+      document.querySelectorAll(`[data-en-${attr}]`).forEach((el) => {
+        if (!el.hasAttribute(`data-it-${attr}`)) el.setAttribute(`data-it-${attr}`, el.getAttribute(attr));
+        el.setAttribute(attr, el.getAttribute(`data-${lang}-${attr}`));
+      });
+    });
+    document.querySelectorAll('[data-lang]').forEach((button) => {
+      button.setAttribute('aria-pressed', String(button.dataset.lang === lang));
+    });
+    renderDate();
+  }
+
+  document.querySelectorAll('[data-lang]').forEach((button) => {
+    button.addEventListener('click', () => {
+      setLanguage(button.dataset.lang);
+      try {
+        localStorage.setItem(LANG_KEY, lang);
+      } catch {
+        // storage blocked: the choice lasts until the page is closed
+      }
+    });
+  });
+
+  let savedLang = null;
+  try {
+    savedLang = localStorage.getItem(LANG_KEY);
+  } catch {
+    // storage blocked: Italian
+  }
+  setLanguage(savedLang);
 
   const root = document.querySelector('[data-carousel]');
   if (!root) return;
@@ -31,6 +77,10 @@
   const OPEN_MS = 360;
   const CLOSE_MS = 400;
   const DWELL_MS = 2400; // rest between automatic steps
+  const TOGGLE_LABELS = {
+    pause: { it: 'Metti in pausa i progetti', en: 'Pause projects' },
+    play: { it: 'Riproduci i progetti', en: 'Play projects' },
+  };
   const PUSH_LEFT = 160; // card units the neighbours move aside when a story opens
   const PUSH_RIGHT = 210;
   const FLING_PROJECTION = 520; // ms; matches the starting speed of the glide curve
@@ -220,6 +270,33 @@
     scheduleAutoplay();
   }
 
+  // Project videos: only the cards on screen play (clones included), never with reduced motion.
+
+  function setPlaying(video, visible) {
+    if (visible && !reduceMotion.matches) {
+      video.play().catch(() => {}); // playback refused: the poster stays
+    } else if (!video.paused) {
+      video.pause(); // pausing an idle video would start loading it
+    }
+  }
+
+  const videoObserver = 'IntersectionObserver' in window
+    ? new IntersectionObserver((entries) => {
+      entries.forEach((entry) => setPlaying(entry.target, entry.isIntersecting));
+    })
+    : null;
+
+  function watchVideos() {
+    const videos = track.querySelectorAll('video');
+    if (!videoObserver) {
+      videos.forEach((video) => setPlaying(video, true));
+      return;
+    }
+    // Observing again reports every video's current visibility straight away.
+    videoObserver.disconnect();
+    videos.forEach((video) => videoObserver.observe(video));
+  }
+
   // Drag, swipe and fling
 
   track.addEventListener('pointerdown', (e) => {
@@ -356,12 +433,16 @@
 
   document.addEventListener('visibilitychange', () => setPause('hidden', document.hidden));
   reduceMotion.addEventListener('change', scheduleAutoplay);
+  reduceMotion.addEventListener('change', watchVideos);
 
   if (toggle) {
     toggle.addEventListener('click', () => {
       const paused = !pause.user;
       toggle.setAttribute('aria-pressed', String(paused));
-      toggle.textContent = paused ? 'Play stories' : 'Pause stories';
+      const label = TOGGLE_LABELS[paused ? 'play' : 'pause'];
+      toggle.dataset.it = label.it;
+      toggle.dataset.en = label.en;
+      toggle.textContent = label[lang];
       setPause('user', paused);
     });
   }
@@ -380,6 +461,7 @@
     measure();
     offset = mod(index * pitch, loopLen);
     render();
+    watchVideos();
     scheduleAutoplay();
   }
 

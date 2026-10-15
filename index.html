@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="it">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>ScrollStudio — Stories</title>
-  <meta name="description" content="ScrollStudio stories on design, living and voyage.">
+  <title data-en="ScrollStudio — Services">ScrollStudio — Servizi</title>
+  <meta name="description" content="ScrollStudio: web app, strumenti e giochi." data-en-content="ScrollStudio: web apps, tools and games.">
   <meta name="theme-color" content="#E9E9E8">
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,20 +18,20 @@
   <div class="room">
     <header class="topbar">
       <div class="topbar__meta">
-        <time class="topbar__date" data-today datetime="2018-08-10">Friday, 10 aug</time>
+        <time class="topbar__date" data-today datetime="2018-08-10">Venerdì, 10 ago</time>
         <span class="topbar__climate">
           <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.1" aria-hidden="true">
             <circle cx="8" cy="5" r="3.3"/>
             <circle cx="5" cy="10.4" r="3.3"/>
             <circle cx="11" cy="10.4" r="3.3"/>
           </svg>
-          22°, living room
+          <span data-en="22°, living room">22°, soggiorno</span>
         </span>
       </div>
 
-      <nav class="topbar__nav" aria-label="Primary">
-        <a href="#stories" aria-current="page">Stories</a>
-        <a href="#schedule">Schedule</a>
+      <nav class="topbar__nav" aria-label="Principale" data-en-aria-label="Primary">
+        <a href="#services" aria-current="page" data-en="Services">Servizi</a>
+        <a href="#schedule" data-en="Schedule">Agenda</a>
         <a href="#habitat">Habitat</a>
         <a class="topbar__home" href="#home" aria-label="Home">
           <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" aria-hidden="true">
@@ -40,128 +40,81 @@
           </svg>
         </a>
       </nav>
+
+      <div class="lang" role="group" aria-label="Lingua" data-en-aria-label="Language">
+        <button class="lang__option" type="button" lang="it" aria-label="IT, Italiano" aria-pressed="true" data-lang="it">
+          <svg class="lang__flag" viewBox="0 0 3 2" preserveAspectRatio="none" aria-hidden="true"><path fill="#009246" d="M0 0h1v2H0z"/><path fill="#F4F5F0" d="M1 0h1v2H1z"/><path fill="#CE2B37" d="M2 0h1v2H2z"/></svg>
+          IT
+        </button>
+        <button class="lang__option" type="button" lang="en" aria-label="EN, English" aria-pressed="false" data-lang="en">
+          <svg class="lang__flag" viewBox="0 0 60 30" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><clipPath id="flag-uk-cross"><path d="M30 15h30v15zv15H0zH0V0zV0h30z"/></clipPath><path fill="#012169" d="M0 0h60v30H0z"/><path stroke="#FFF" stroke-width="6" d="m0 0 60 30m0-30L0 30"/><path stroke="#C8102E" stroke-width="4" clip-path="url(#flag-uk-cross)" d="m0 0 60 30m0-30L0 30"/><path stroke="#FFF" stroke-width="10" d="M30 0v30M0 15h60"/><path stroke="#C8102E" stroke-width="6" d="M30 0v30M0 15h60"/></svg>
+          EN
+        </button>
+      </div>
     </header>
 
     <main>
       <h1 class="visually-hidden">ScrollStudio</h1>
 
-      <section class="carousel" id="stories" aria-roledescription="carousel" aria-label="Stories" data-carousel>
-        <button class="carousel__toggle" type="button" aria-pressed="false" data-carousel-toggle>Pause stories</button>
+      <section class="carousel" id="services" aria-roledescription="carosello" aria-label="Servizi" data-en-aria-roledescription="carousel" data-en-aria-label="Services" data-carousel>
+        <button class="carousel__toggle" type="button" aria-pressed="false" data-carousel-toggle data-en="Pause projects">Metti in pausa i progetti</button>
 
-        <!-- Placeholder content: swap the files in assets/placeholders/ (see DESIGN.md) -->
+        <!-- Projects: each card plays its video in place of the image (see DESIGN.md) -->
         <ul class="carousel__track" data-carousel-track>
           <li class="carousel__glow" role="presentation" data-carousel-glow></li>
 
           <li class="carousel__slide">
-            <a class="story" href="#story-design">
+            <a class="story story--video" href="https://kekkocoppola.github.io/Bouncical/">
               <span class="story__paper"></span>
-              <span class="story__media"><img class="story__image" src="assets/placeholders/story-01.svg" alt="" draggable="false"></span>
-              <img class="story__pop story__pop--behind" src="assets/placeholders/pop-01-shadow.svg" alt="" style="--l:100;--t:150;--w:140" draggable="false">
-              <svg class="story__glyph" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><rect x="2" y="2" width="8" height="8"/></svg>
-              <span class="story__text">
-                <span class="story__title">Design</span>
-                <span class="story__author">Chengtao Yi</span>
-              </span>
-              <img class="story__avatar" src="assets/placeholders/avatar-01.svg" alt="" draggable="false">
-            </a>
-            <div class="story__detail">
-              <a class="point point--lg" href="#design-form" style="--x:271;--y:-40;--xs:228;--ys:-18;--d:0">
-                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M2.5 11.5V1M2.5 1.5H7V5H2.5M7 3h3v3.5H5V5"/></svg>
-                <span class="point__title">Form</span>
-                <span class="point__author">Author name</span>
-              </a>
-              <a class="point" href="#design-material" style="--x:-75;--y:113;--xs:230;--ys:205;--d:1">
-                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="6" cy="6" r="5"/><circle cx="6" cy="6" r="1.8"/></svg>
-                <span class="point__title">Material</span>
-                <span class="point__author">Author name</span>
-              </a>
-              <a class="story__plus" href="#design-new" aria-label="Add to Design">
-                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M5 1v8M1 5h8"/></svg>
-              </a>
-            </div>
-          </li>
-
-          <li class="carousel__slide">
-            <a class="story" href="#story-places">
-              <span class="story__paper"></span>
-              <span class="story__media"><img class="story__image" src="assets/placeholders/story-02.svg" alt="" draggable="false"></span>
+              <span class="story__media"><video class="story__image" src="assets/projects/bouncical.mp4" style="object-position:50% 0" poster="assets/projects/bouncical.jpg" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true"></video></span>
               <svg class="story__glyph" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="6" cy="6" r="4.5"/></svg>
               <span class="story__text">
-                <span class="story__title">Places</span>
-                <span class="story__author">Brooke Holm</span>
+                <span class="story__title">Bouncical</span>
+                <span class="story__author" data-en="Physics music sandbox">Musica dalla fisica</span>
               </span>
-              <img class="story__avatar" src="assets/placeholders/avatar-02.svg" alt="" draggable="false">
+              <img class="story__avatar" src="assets/projects/bouncical-logo.svg" alt="" draggable="false">
             </a>
             <div class="story__detail">
-              <a class="point point--lg" href="#places-salt" style="--x:271;--y:-40;--xs:228;--ys:-18;--d:0">
-                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M2.5 11.5V1M2.5 1.5H7V5H2.5M7 3h3v3.5H5V5"/></svg>
-                <span class="point__title">Salt Flats</span>
-                <span class="point__author">Author name</span>
+              <a class="point point--lg" href="https://kekkocoppola.github.io/Bouncical/" target="_blank" rel="noopener" style="--x:271;--y:-40;--xs:228;--ys:-18;--d:0">
+                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 1.5v9l7.5-4.5z"/></svg>
+                <span class="point__title" data-en="Try it">Provalo</span>
+                <span class="point__author" data-en="Live demo">Demo live</span>
               </a>
-              <a class="point" href="#places-coast" style="--x:-75;--y:113;--xs:230;--ys:205;--d:1">
-                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="6" cy="6" r="5"/><circle cx="6" cy="6" r="1.8"/></svg>
-                <span class="point__title">Coastline</span>
-                <span class="point__author">Author name</span>
+              <a class="point" href="https://github.com/KekkoCoppola/Bouncical" target="_blank" rel="noopener" style="--x:-75;--y:113;--xs:230;--ys:205;--d:1">
+                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 3 1 6l3 3M8 3l3 3-3 3"/></svg>
+                <span class="point__title" data-en="Source">Codice</span>
+                <span class="point__author">GitHub</span>
               </a>
-              <a class="story__plus" href="#places-new" aria-label="Add to Places">
-                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M5 1v8M1 5h8"/></svg>
+              <a class="story__plus" href="https://kekkocoppola.github.io/Bouncical/" target="_blank" rel="noopener" aria-label="Apri Bouncical" data-en-aria-label="Open Bouncical">
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M2 8 8 2M3.5 2H8v4.5"/></svg>
               </a>
             </div>
           </li>
 
           <li class="carousel__slide">
-            <a class="story story--pano" href="#story-apogee">
+            <a class="story story--video" href="https://kekkocoppola.github.io/TopFratmRanks/">
               <span class="story__paper"></span>
-              <span class="story__media"><img class="story__pano" src="assets/placeholders/story-03-pano.svg" alt="" style="--l:-80;--t:33;--w:440" draggable="false"></span>
-              <svg class="story__glyph" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M6 1.5 11 10.5H1z"/></svg>
+              <span class="story__media"><video class="story__image" src="assets/projects/topfratmranks.mp4" style="object-position:50% 100%" poster="assets/projects/topfratmranks.jpg" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true"></video></span>
+              <svg class="story__glyph" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M1.5 10.5h9M3 10.5V7M6 10.5V2M9 10.5V5"/></svg>
               <span class="story__text">
-                <span class="story__title">Apogee</span>
-                <span class="story__author">John Westrock</span>
+                <span class="story__title">TopFratmRanks</span>
+                <span class="story__author" data-en="Ranking video maker">Crea video classifica</span>
               </span>
-              <img class="story__avatar" src="assets/placeholders/avatar-03.svg" alt="" draggable="false">
+              <img class="story__avatar" src="assets/projects/topfratmranks-logo.svg" alt="" draggable="false">
             </a>
             <div class="story__detail">
-              <a class="point point--lg" href="#apogee-explorer" style="--x:271;--y:-40;--xs:228;--ys:-18;--d:0">
-                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M2.5 11.5V1M2.5 1.5H7V5H2.5M7 3h3v3.5H5V5"/></svg>
-                <span class="point__title">Explorer</span>
-                <span class="point__author">Samantha Jensen</span>
+              <a class="point point--lg" href="https://kekkocoppola.github.io/TopFratmRanks/" target="_blank" rel="noopener" style="--x:271;--y:-40;--xs:228;--ys:-18;--d:0">
+                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 1.5v9l7.5-4.5z"/></svg>
+                <span class="point__title" data-en="Try it">Provalo</span>
+                <span class="point__author" data-en="Live demo">Demo live</span>
               </a>
-              <a class="point" href="#apogee-base-camp" style="--x:-75;--y:113;--xs:230;--ys:205;--d:1">
-                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="6" cy="6" r="5"/><circle cx="6" cy="6" r="1.8"/></svg>
-                <span class="point__title">Base Camp</span>
-                <span class="point__author">Patricia Schmidt</span>
+              <a class="point" href="https://github.com/KekkoCoppola/TopFratmRanks" target="_blank" rel="noopener" style="--x:-75;--y:113;--xs:230;--ys:205;--d:1">
+                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 3 1 6l3 3M8 3l3 3-3 3"/></svg>
+                <span class="point__title" data-en="Source">Codice</span>
+                <span class="point__author">GitHub</span>
               </a>
-              <a class="story__plus" href="#apogee-new" aria-label="Add to Apogee">
-                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M5 1v8M1 5h8"/></svg>
-              </a>
-            </div>
-          </li>
-
-          <li class="carousel__slide">
-            <a class="story" href="#story-milkbath">
-              <span class="story__paper"></span>
-              <span class="story__media"><img class="story__image" src="assets/placeholders/story-04.svg" alt="" draggable="false"></span>
-              <img class="story__pop" src="assets/placeholders/pop-04-hair.svg" alt="" style="--l:60;--t:-22;--w:120" draggable="false">
-              <svg class="story__glyph" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M6 1.2C8.4 4.2 9.6 6 9.6 7.6a3.6 3.6 0 0 1-7.2 0C2.4 6 3.6 4.2 6 1.2z"/></svg>
-              <span class="story__text">
-                <span class="story__title">Milkbath</span>
-                <span class="story__author">Natasha</span>
-              </span>
-              <img class="story__avatar" src="assets/placeholders/avatar-04.svg" alt="" draggable="false">
-            </a>
-            <div class="story__detail">
-              <a class="point point--lg" href="#milkbath-ritual" style="--x:271;--y:-40;--xs:228;--ys:-18;--d:0">
-                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><path d="M2.5 11.5V1M2.5 1.5H7V5H2.5M7 3h3v3.5H5V5"/></svg>
-                <span class="point__title">Ritual</span>
-                <span class="point__author">Author name</span>
-              </a>
-              <a class="point" href="#milkbath-skin" style="--x:-75;--y:113;--xs:230;--ys:205;--d:1">
-                <svg class="point__icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="6" cy="6" r="5"/><circle cx="6" cy="6" r="1.8"/></svg>
-                <span class="point__title">Skin</span>
-                <span class="point__author">Author name</span>
-              </a>
-              <a class="story__plus" href="#milkbath-new" aria-label="Add to Milkbath">
-                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M5 1v8M1 5h8"/></svg>
+              <a class="story__plus" href="https://kekkocoppola.github.io/TopFratmRanks/" target="_blank" rel="noopener" aria-label="Apri TopFratmRanks" data-en-aria-label="Open TopFratmRanks">
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M2 8 8 2M3.5 2H8v4.5"/></svg>
               </a>
             </div>
           </li>
@@ -170,8 +123,8 @@
 
       <section class="intro" aria-labelledby="intro-title">
         <span class="intro__mark" aria-hidden="true"></span>
-        <h2 class="intro__title" id="intro-title">Stories</h2>
-        <p class="intro__tags">Design, Living, Voyage</p>
+        <h2 class="intro__title" id="intro-title" data-en="Services">Servizi</h2>
+        <p class="intro__tags" data-en="Web apps, Tools, Games">Web app, Strumenti, Giochi</p>
       </section>
     </main>
 

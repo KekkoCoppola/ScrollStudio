@@ -3,9 +3,9 @@
    1u = 1px of the reference frame; 1cu = 1px of a 175px-wide reference card. */
 
 :root {
-  /* Scale. Desktop: the whole frame fits the screen, but never shrinks below 1000 frame px per screen width. */
-  --u: max(min(100vw / 800, 100vh / 600), 100vw / 1000);
-  --u: max(min(100vw / 800, 100svh / 600), 100vw / 1000);
+  /* Scale: the whole room, topbar down to the desk legs (730u), always fits the screen. */
+  --u: min(100vw / 800, 100vh / 730);
+  --u: min(100vw / 800, 100svh / 730);
 
   /* Wall */
   --wall-top: #E9E9E8;
@@ -16,6 +16,7 @@
 
   /* Surfaces */
   --card: #FBFBFA;
+  --video-ink: #0E0E10; /* behind project videos while they load */
 
   /* Ink */
   --ink-900: #2B2B2D;
@@ -68,13 +69,6 @@
   --dur-hover: 400ms;
 }
 
-/* Tablet and small windows: the reference frame scaled to the width, exactly */
-@media (max-width: 1023px) {
-  :root {
-    --u: calc(100vw / 800);
-  }
-}
-
 /* Portrait tablets and tall windows: bigger cards, the room fills the height */
 @media (min-width: 641px) and (orientation: portrait) {
   :root {
@@ -93,10 +87,12 @@
     --fs-display: 26px;
     --fs-tags: 13px;
     --gutter: 24px;
-    --card-w: min(58vw, 300px);
+    /* on short screens the cards and the desk shrink together, so the desk still ends on screen */
+    --card-w: min(58vw, 300px, 33vh - 62px);
+    --card-w: min(58vw, 300px, 33svh - 62px);
     --card-gap: 6vw;
     --track-pad-top: calc(var(--cu) * 70);
     --track-pad-bottom: calc(var(--cu) * 70);
-    --scene-w: 116vw;
+    --scene-w: calc(var(--card-w) * 2);
   }
 }

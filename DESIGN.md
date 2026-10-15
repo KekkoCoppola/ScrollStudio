@@ -41,14 +41,13 @@ Tutti i token sono in [`css/tokens.css`](css/tokens.css).
 ## Unità e layout
 
 - `1u` = 1px del frame 800×600. `1cu` = 1px di una card larga 175 (dentro la card tutto è in `cu`).
-- La stanza è ancorata in alto come nella GIF: header `0–68u`, card a `107u` (175×240u, passo 235u), "Stories" a `455u`, scrivania a `360u`. La scena continua fino al pavimento (`730u`), poi il footer: la pagina scorre.
+- La stanza è ancorata in alto come nella GIF: header `0–68u`, card a `107u` (175×240u, passo 235u), "Servizi" a `455u`, scrivania a `360u`. La scena continua fino al pavimento (`730u`): la stanza intera, scrivania compresa, sta sempre nello schermo senza scroll; sotto c'è solo il footer.
 
 | Formato | Scala | Note |
 |---|---|---|
-| Desktop orizzontale ≥1024px | `max(min(100vw/800, 100svh/600), 100vw/1000)` | la prima schermata è il frame della GIF |
-| Finestre/tablet <1024px orizzontali | `100vw/800` | inquadratura identica alla GIF (4ª card che sbuca) |
-| Tablet verticale | `min(100vw/620, 100svh/740)` | card più grandi, "Stories" sopra la scrivania |
-| Telefono ≤640px | card `min(58vw, 300px)` | header su due righe, poi card, "Stories", scrivania |
+| Desktop e finestre orizzontali | `min(100vw/800, 100svh/730)` | la stanza (730u) entra in altezza; su schermi larghi le card si moltiplicano ai lati |
+| Tablet verticale | `min(100vw/620, 100svh/740)` | card più grandi, "Servizi" sopra la scrivania |
+| Telefono ≤640px | card `min(58vw, 300px, 33svh − 62px)`, scrivania larga 2 card | header su due righe, poi card, "Servizi", scrivania: tutto nello schermo fino a 320×568 |
 
 ## Motion (misurato dalla GIF)
 
@@ -70,7 +69,40 @@ Le tabelle sono in [`js/main.js`](js/main.js) e replicate in CSS come `linear()`
 - Click su una card → si porta nel 2° slot (1° su telefono) e si apre. Click di nuovo, Esc o click sulla parete → si chiude.
 - Frecce ←/→ con focus nel carosello.
 
-## Sostituire i placeholder
+## Lingue (IT / EN)
+
+- Italiano di default. Lo switch in alto a destra (bandiera + sigla; su telefono nella prima riga) passa all'inglese e la scelta resta in `localStorage` (`scrollstudio-lang`).
+- I testi italiani sono scritti nell'HTML; l'inglese sta accanto, sullo stesso elemento: `data-en="…"` per il testo, `data-en-aria-label`, `data-en-aria-roledescription`, `data-en-content` per gli attributi.
+- Testo nuovo da tradurre = elemento con solo testo dentro (niente icone: avvolgi il testo in uno `<span>`) + `data-en`.
+- La data in alto segue la lingua ("Venerdì, 10 ago" / "Friday, 10 aug"); le etichette del pulsante pausa sono in `TOGGLE_LABELS` in [`js/main.js`](js/main.js).
+- Lingua attiva: inchiostro `--ink-900` e bandiera a colori; l'altra: `--ink-700` e bandiera in grigio al 50%.
+
+## Progetti (card video)
+
+Il carosello mostra i progetti: Bouncical e TopFratmRanks. Ogni card è `class="story story--video"` con un `<video class="story__image">` al posto dell'immagine: riempie la card (`object-fit: cover`), testo chiaro e sfumatura scura in alto per il titolo.
+
+| File | Uso | Formato |
+|---|---|---|
+| `assets/projects/<progetto>.mp4` | video della card, in loop e muto | H.264 verticale 9:16, senza audio, `+faststart`, ≤720px di larghezza |
+| `assets/projects/<progetto>.jpg` | poster: primo frame, mostrato prima del play e con `prefers-reduced-motion` | JPG alla stessa risoluzione |
+| `assets/projects/<progetto>-logo.svg` | logo nell'avatar in basso a sinistra (cerchio di 26cu, anello chiaro sul video) | SVG quadrato 128, contenuto entro il cerchio inscritto, niente scritte |
+
+Loghi: `bouncical-logo.svg` è il marchio di `logo.png` del repo ridisegnato per l'avatar (senza scritta, linee e palline più spesse); `topfratmranks-logo.svg` è un podio tricolore con corona, provvisorio finché il progetto non ha un logo suo.
+
+- `preload="none"`: [`js/main.js`](js/main.js) avvia solo i video visibili (anche le copie del loop) e mette in pausa gli altri.
+- Aperta la card: "Provalo" → sito live, "Codice" → repo GitHub, il bottone corallo (↗) apre il sito.
+- Per aggiungere un progetto: copia una `<li class="carousel__slide">` di un progetto e cambia video, poster, testi (italiano e `data-en`) e link.
+
+Ricodifica dal video sorgente:
+
+```sh
+ffmpeg -i sorgente.mp4 -vf "scale=720:-2,fps=30" -c:v libx264 -preset slow -crf 27 -pix_fmt yuv420p -an -movflags +faststart assets/projects/nome.mp4
+ffmpeg -i assets/projects/nome.mp4 -frames:v 1 -q:v 4 assets/projects/nome.jpg
+```
+
+## Card con immagine (placeholder)
+
+Non più usate in `index.html`, ora occupato dai progetti. I file restano come riferimento per card con immagine, panorama o parti che escono dal quadro (le quattro storie di esempio sono nel primo commit).
 
 | File | Uso | Formato consigliato |
 |---|---|---|
@@ -80,6 +112,6 @@ Le tabelle sono in [`js/main.js`](js/main.js) e replicate in CSS come `linear()`
 | `assets/placeholders/avatar-0X.svg` | avatar autori | 128×128 |
 | `assets/scene/desk-scene.svg` | scena scrivania | facoltativo: PNG trasparente 1380×1080 |
 
-Per una card con panorama usa `class="story story--pano"` e `<img class="story__pano">` (vedi Apogee in [`index.html`](index.html)). Capitoli: ogni `<a class="point">` ha la posizione in cu (`--x --y`, e `--xs --ys` per il telefono).
+Per una card con panorama usa `class="story story--pano"` e `<img class="story__pano">` (vedi Apogee nel primo commit). Capitoli: ogni `<a class="point">` ha la posizione in cu (`--x --y`, e `--xs --ys` per il telefono).
 
 `assets/extracted/` contiene ritagli dello screenshot originale solo come riferimento (bassa risoluzione, con dithering).

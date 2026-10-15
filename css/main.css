@@ -99,6 +99,7 @@ a {
   display: flex;
   align-items: center;
   gap: calc(var(--u) * 19);
+  margin-left: auto;
 }
 
 .topbar__nav a {
@@ -131,6 +132,56 @@ a {
 
 .topbar__nav .topbar__home::after {
   content: none;
+}
+
+/* Language switch: Italian (default) and English; the flag of the other language rests in grey */
+
+.lang {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 12);
+  margin-left: calc(var(--u) * 28);
+}
+
+.lang__option {
+  display: inline-flex;
+  align-items: center;
+  gap: max(5px, calc(var(--u) * 5));
+  padding: calc(var(--u) * 4) 0;
+  font: inherit;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--ink-700);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color var(--dur-hover) ease-out;
+}
+
+.lang__option:hover,
+.lang__option[aria-pressed="true"] {
+  color: var(--ink-900);
+}
+
+.lang__flag {
+  display: block;
+  flex: none;
+  width: max(15px, calc(var(--u) * 13.5));
+  height: max(10px, calc(var(--u) * 9));
+  overflow: hidden;
+  border-radius: 2px;
+  box-shadow: 0 0 0 0.5px rgb(var(--shadow-ink) / 0.3);
+  filter: grayscale(1);
+  opacity: 0.5;
+  transition:
+    filter var(--dur-hover) ease-out,
+    opacity var(--dur-hover) ease-out;
+}
+
+.lang__option:hover .lang__flag,
+.lang__option[aria-pressed="true"] .lang__flag {
+  filter: none;
+  opacity: 1;
 }
 
 .icon {
@@ -370,6 +421,46 @@ a {
   -webkit-user-drag: none;
 }
 
+/* Project cards: a dark looping video under light text, shaded at the top for the title */
+
+.story--video {
+  color: var(--card);
+  text-shadow: 0 1px calc(var(--cu) * 8) rgb(var(--shadow-ink) / 0.45);
+}
+
+.story--video .story__media {
+  background: var(--video-ink);
+}
+
+.story--video .story__media::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 50%;
+  background: linear-gradient(rgb(var(--shadow-ink) / 0.7), rgb(var(--shadow-ink) / 0.4) 45%, rgb(var(--shadow-ink) / 0));
+  /* blur any text burnt into the video, so it can't fight the title */
+  -webkit-backdrop-filter: blur(calc(var(--cu) * 7));
+  backdrop-filter: blur(calc(var(--cu) * 7));
+  -webkit-mask-image: linear-gradient(#000 50%, transparent);
+  mask-image: linear-gradient(#000 50%, transparent);
+}
+
+video.story__image {
+  pointer-events: none;
+}
+
+.story--video .story__author,
+.story--video .story__glyph {
+  color: rgb(251 251 250 / 0.75);
+}
+
+/* Project logos are dark too: a thin light ring lifts them off the video */
+.story--video .story__avatar {
+  box-shadow:
+    0 0 0 1px rgb(251 251 250 / 0.35),
+    0 calc(var(--cu) * 2) calc(var(--cu) * 6) rgb(0 0 0 / 0.35);
+}
+
 /* Opened story: the frame dissolves into the wall, the scene spreads out, chapters appear */
 
 .story__detail {
@@ -595,8 +686,15 @@ a {
   }
 
   .topbar__nav {
+    order: 1;
     width: 100%;
     gap: 22px;
+    margin-left: 0;
+  }
+
+  .lang {
+    gap: 14px;
+    margin-left: auto;
   }
 
   .topbar__home {
@@ -626,7 +724,7 @@ a {
     position: relative;
     top: auto;
     left: auto;
-    margin: -64px calc((100vw - var(--scene-w)) / 2) 0;
+    margin: calc(var(--scene-w) * -0.14) calc((100vw - var(--scene-w)) / 2) 0;
     transform: none;
   }
 }
