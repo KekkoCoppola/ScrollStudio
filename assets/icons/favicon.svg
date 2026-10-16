@@ -1,8 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#3D55CF"/><stop offset=".38" stop-color="#6A5BE6"/><stop offset=".41" stop-color="#9A62F6"/><stop offset="1" stop-color="#C46BFF"/>
-    </linearGradient>
-  </defs>
-  <rect width="32" height="32" rx="6" fill="url(#g)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="174 320.5 260 260">
+  <!-- ScrollStudio favicon: the "S" of assets/logos/ScrollStudioLogo.svg -->
+  <rect x="174" y="320.5" width="260" height="260" rx="58" fill="#ECECEC"/>
+  <g fill="#424242"><path d="M 380 375 C 362 352 336 340 304 340 C 261 340 234 365 234 398 C 234 433 263 449 302 460 C 337 470 353 479 353 501 C 353 521 334 534 307 534 C 279 534 259 521 247 503 L 224 522 C 242 546 271 561 307 561 C 354 561 384 535 384 498 C 384 459 352 444 312 433 C 279 424 265 415 265 396 C 265 378 281 367 305 367 C 329 367 347 377 359 394 Z" /></g>
 </svg>

@@ -23,9 +23,8 @@
   --ink-700: #48484B;
   --ink-500: #76767A;
 
-  /* Brand mark (Stories icon) */
+  /* Focus ring */
   --brand-violet: #8E5EEA;
-  --brand-gradient: linear-gradient(135deg, #3D55CF 0%, #6A5BE6 38%, #9A62F6 41%, #C46BFF 100%);
 
   /* Action: the "+" that replaces the avatar when a story opens */
   --coral: #FD767E;
@@ -36,8 +35,6 @@
   /* Type */
   --font: "Urbanist", "Gilroy", "Sofia Pro", ui-sans-serif, system-ui, sans-serif;
   --fs-meta: max(11px, calc(var(--u) * 9));
-  --fs-display: max(20px, calc(var(--u) * 20));
-  --fs-tags: max(11px, calc(var(--u) * 9.5));
   --fw-light: 300;
   --fw-regular: 400;
 
@@ -50,7 +47,6 @@
   --card-top: calc(var(--u) * 107);
   --track-pad-top: calc(var(--u) * 92);
   --track-pad-bottom: calc(var(--u) * 80);
-  --intro-top: calc(var(--u) * 455);
   --scene-top: calc(var(--u) * 360);
   --scene-w: calc(var(--u) * 460);
 
@@ -58,7 +54,6 @@
   --card-h: calc(var(--card-w) * 240 / 175);
   --cu: calc(var(--card-w) / 175);
   --radius-card: calc(var(--cu) * 4);
-  --radius-mark: calc(var(--u) * 4);
 
   /* Motion (durations mirror js/main.js, measured from the GIF) */
   --ease-glide: linear(0, 0.077, 0.166, 0.255, 0.345, 0.43, 0.514, 0.6, 0.677, 0.749, 0.813, 0.872, 0.923, 0.962, 0.991, 1);
@@ -74,8 +69,6 @@
   :root {
     --u: min(100vw / 620, 100vh / 740);
     --u: min(100vw / 620, 100svh / 740);
-    /* the desk is relatively wider here: lift the intro into the gap above it */
-    --intro-top: calc(var(--u) * 372);
   }
 }
 
@@ -84,8 +77,6 @@
   :root {
     --u: calc(100vw / 400);
     --fs-meta: 13px;
-    --fs-display: 26px;
-    --fs-tags: 13px;
     --gutter: 24px;
     /* on short screens the cards and the desk shrink together, so the desk still ends on screen */
     --card-w: min(58vw, 300px, 33vh - 62px);

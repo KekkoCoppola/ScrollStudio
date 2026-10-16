@@ -4,20 +4,8 @@
   // Language: the page is written in Italian; English sits next to each text in data-en
   // (and data-en-<attribute> for attributes). The first switch keeps the Italian in data-it.
   const LANG_KEY = 'scrollstudio-lang';
-  const LOCALES = { it: 'it-IT', en: 'en-GB' };
   const TRANSLATED_ATTRS = ['aria-label', 'aria-roledescription', 'content'];
   let lang = 'it';
-
-  // Topbar date, written the way the design does: "Friday, 10 aug" / "Venerdì, 10 ago"
-  const dateEl = document.querySelector('[data-today]');
-  function renderDate() {
-    if (!dateEl) return;
-    const now = new Date();
-    const weekday = now.toLocaleDateString(LOCALES[lang], { weekday: 'long' });
-    const month = now.toLocaleDateString(LOCALES[lang], { month: 'short' }).toLowerCase().replace('.', '');
-    dateEl.textContent = `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)}, ${now.getDate()} ${month}`;
-    dateEl.dateTime = now.toISOString().slice(0, 10);
-  }
 
   function setLanguage(next) {
     lang = next === 'en' ? 'en' : 'it';
@@ -35,7 +23,6 @@
     document.querySelectorAll('[data-lang]').forEach((button) => {
       button.setAttribute('aria-pressed', String(button.dataset.lang === lang));
     });
-    renderDate();
   }
 
   document.querySelectorAll('[data-lang]').forEach((button) => {
@@ -72,17 +59,17 @@
   // Motion measured frame by frame from the reference GIF (25 fps).
   // Slides, flings and closing share one 600 ms curve, whatever the distance travelled.
   const GLIDE_CURVE = [0, 0.077, 0.166, 0.255, 0.345, 0.43, 0.514, 0.6, 0.677, 0.749, 0.813, 0.872, 0.923, 0.962, 0.991, 1];
-  const OPEN_CURVE = [0, 0.256, 0.388, 0.519, 0.638, 0.75, 0.844, 0.925, 0.981, 1];
   const GLIDE_MS = 600;
-  const OPEN_MS = 360;
   const CLOSE_MS = 400;
   const DWELL_MS = 2400; // rest between automatic steps
   const TOGGLE_LABELS = {
     pause: { it: 'Metti in pausa i progetti', en: 'Pause projects' },
     play: { it: 'Riproduci i progetti', en: 'Play projects' },
   };
-  const PUSH_LEFT = 160; // card units the neighbours move aside when a story opens
+  const PUSH_LEFT = 160; // card units the neighbours move aside (and fade out) when a story opens
   const PUSH_RIGHT = 210;
+  // An opened card is centred together with its "Provalo" block: the pair spans 0–410 card units.
+  const OPEN_GROUP_CENTER = 205;
   const FLING_PROJECTION = 520; // ms; matches the starting speed of the glide curve
 
   const fromTable = (table) => (p) => {
@@ -91,7 +78,6 @@
     return i >= table.length - 1 ? 1 : table[i] + (table[i + 1] - table[i]) * (x - i);
   };
   const glideEase = fromTable(GLIDE_CURVE);
-  const openEase = fromTable(OPEN_CURVE);
   const mod = (n, m) => ((n % m) + m) % m;
   const motionMs = (ms) => (reduceMotion.matches ? 0 : ms);
 
@@ -147,16 +133,24 @@
 
   const slotX = (i) => startX + mod(i * pitch - offset + pitch, loopLen) - pitch;
 
+  // Where an opened card settles: centred with its "Provalo" block; on phones, the first slot.
+  const openTargetX = () => (phone.matches ? startX : track.clientWidth / 2 - OPEN_GROUP_CENTER * (cardW / 175));
+
   function render() {
     const cu = cardW / 175;
-    const openX = openSlide ? slotX(slides.indexOf(openSlide)) : 0;
+    const openSlot = openSlide ? slotX(slides.indexOf(openSlide)) : 0;
+    const openX = openSlot + (openTargetX() - openSlot) * spread;
+    const fade = Math.max(0, 1 - spread * 1.5); // the others are gone before the card arrives
     for (let i = 0; i < slides.length; i += 1) {
       const slide = slides[i];
       let x = slotX(i);
-      if (openSlide && slide !== openSlide && spread) {
-        x += (x < openX ? -PUSH_LEFT : PUSH_RIGHT) * cu * spread;
-      }
+      const other = openSlide && slide !== openSlide && spread > 0;
+      if (slide === openSlide) x = openX;
+      else if (other) x += (x < openSlot ? -PUSH_LEFT : PUSH_RIGHT) * cu * spread;
       slide.style.transform = `translate3d(${x.toFixed(2)}px, 0, 0)`;
+      slide.style.opacity = other ? fade.toFixed(3) : '';
+      slide.style.visibility = other && fade === 0 ? 'hidden' : '';
+      slide.style.pointerEvents = other ? 'none' : '';
     }
     if (glow) {
       glow.style.opacity = spread.toFixed(3);
@@ -225,18 +219,12 @@
       closeStory(() => openStory(slide));
       return;
     }
-    // Like the reference: the story opens from the second slot (first on phones).
-    const slot = phone.matches ? 0 : 1;
-    const base = (slides.indexOf(slide) - slot) * pitch;
-    const to = base + Math.round((targetOffset() - base) / loopLen) * loopLen;
-    const reveal = () => {
-      openSlide = slide;
-      isOpen = true;
-      slide.classList.add('is-open');
-      animate('spread', 1, motionMs(OPEN_MS), openEase);
-    };
-    if (Math.abs(to - offset) < 0.5 && !tweens.has('offset')) reveal();
-    else animate('offset', to, motionMs(GLIDE_MS), glideEase, reveal);
+    // The strip stops where it is; only the chosen card travels to the centre (see render).
+    tweens.delete('offset');
+    openSlide = slide;
+    isOpen = true;
+    slide.classList.add('is-open');
+    animate('spread', 1, motionMs(GLIDE_MS), glideEase);
   }
 
   function closeStory(done) {
@@ -250,7 +238,13 @@
     animate('spread', 0, motionMs(CLOSE_MS), glideEase, () => {
       if (!isOpen && openSlide === slide) openSlide = null;
       render();
-      if (done) done();
+      if (done) {
+        done();
+        return;
+      }
+      // A story opened mid-glide leaves the strip between two slots: settle it.
+      const rest = Math.round(offset / pitch) * pitch;
+      if (Math.abs(rest - offset) > 0.5) animate('offset', rest, motionMs(GLIDE_MS), glideEase, scheduleAutoplay);
       else scheduleAutoplay();
     });
   }

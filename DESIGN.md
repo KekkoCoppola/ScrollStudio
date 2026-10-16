@@ -7,7 +7,7 @@ Tutti i token sono in [`css/tokens.css`](css/tokens.css).
 ## Design language
 
 - **Galleria in una stanza.** Le storie sono quadri appesi a una parete grigio chiaro; subito sotto, una scena "habitat" (scrivania, sedia Eames, pianta) ancora la pagina al pavimento.
-- **Silenzio cromatico.** Interfaccia quasi monocroma: il colore arriva dalle foto, dal quadrato gradiente "Stories" e dal solo "+" corallo.
+- **Silenzio cromatico.** Interfaccia quasi monocroma: il colore arriva dalle foto e dal solo "+" corallo.
 - **Testo sottile e piccolo.** Font geometrico, peso light per i titoli, nessun grassetto.
 - **Profondità morbida.** Card senza bordo, angoli 4px, ombra larga e diffusa verso il basso.
 - **Le immagini escono dal quadro.** Soggetti scontornati possono sbordare dalla card (capelli di Milkbath, ombra del cono di Design).
@@ -23,7 +23,18 @@ Tutti i token sono in [`css/tokens.css`](css/tokens.css).
 | `--ink-900` | `#2B2B2D` | titoli |
 | `--ink-700` | `#48484B` | testo, nav, autori, footer |
 | `--coral` | `#FD767E` | bottone "+" della storia aperta |
-| `--brand-gradient` | `#3D55CF → #6A5BE6 → #9A62F6 → #C46BFF` | quadrato "Stories", favicon |
+
+## Logo
+
+Wordmark "Scroll / STUDIO" con le lettere tagliate in orizzontale, grigio `#424242` (vicino a `--ink-700`). Originali in `assets/logos/` (SVG, PNG con e senza fondo, JPG 2×).
+
+| File | Dove |
+|---|---|
+| `assets/logos/scrollstudio-wordmark.svg` | header in alto a sinistra (link alla home, alto 34u, min 30px; 34px su telefono) e footer (26u, min 30px). È `ScrollStudioLogo.svg` con il viewBox stretto sul disegno |
+| `assets/icons/favicon.svg` | favicon: la "S" del logo su fondo `#ECECEC` arrotondato |
+| `assets/icons/apple-touch-icon.png` | icona iOS 180×180: wordmark su `#ECECEC`, da `ScrollStudioNOBG.png` |
+
+Il logo non va sotto i ~30px di altezza: i tagli delle lettere spariscono.
 
 ## Tipografia
 
@@ -31,22 +42,21 @@ Tutti i token sono in [`css/tokens.css`](css/tokens.css).
 
 | Ruolo | Dimensione (px del frame 800) | Peso |
 |---|---|---|
-| Meta header / nav | 9 | 400 |
+| Nav (Servizi · Abbonamento · Home) / lingua | 9 | 400 |
 | Titolo card | 17 | 300 |
 | Autore card | 10.5 | 400 |
 | Capitolo grande ("Explorer") | 26 | 300 |
 | Capitolo piccolo ("Base Camp") | 16.5 | 300 |
-| Titolo sezione ("Stories") | 20 | 300 |
 
 ## Unità e layout
 
 - `1u` = 1px del frame 800×600. `1cu` = 1px di una card larga 175 (dentro la card tutto è in `cu`).
-- La stanza è ancorata in alto come nella GIF: header `0–68u`, card a `107u` (175×240u, passo 235u), "Servizi" a `455u`, scrivania a `360u`. La scena continua fino al pavimento (`730u`): la stanza intera, scrivania compresa, sta sempre nello schermo senza scroll; sotto c'è solo il footer.
+- La stanza è ancorata in alto come nella GIF: header `0–68u`, card a `107u` (175×240u, passo 235u), scrivania a `360u`. La scena continua fino al pavimento (`730u`): la stanza intera, scrivania compresa, sta sempre nello schermo senza scroll; sotto c'è solo il footer.
 
 | Formato | Scala | Note |
 |---|---|---|
 | Desktop e finestre orizzontali | `min(100vw/800, 100svh/730)` | la stanza (730u) entra in altezza; su schermi larghi le card si moltiplicano ai lati |
-| Tablet verticale | `min(100vw/620, 100svh/740)` | card più grandi, "Servizi" sopra la scrivania |
+| Tablet verticale | `min(100vw/620, 100svh/740)` | card più grandi |
 | Telefono ≤640px | card `min(58vw, 300px, 33svh − 62px)`, scrivania larga 2 card | header su due righe, poi card, "Servizi", scrivania: tutto nello schermo fino a 320×568 |
 
 ## Motion (misurato dalla GIF)
@@ -54,19 +64,20 @@ Tutti i token sono in [`css/tokens.css`](css/tokens.css).
 | Movimento | Durata | Curva |
 |---|---|---|
 | Scorrimento di 1 card, lancio di più card, chiusura storia | 600 ms (chiusura 400 ms) | tabella `GLIDE_CURVE`: partenza quasi lineare, frenata morbida — identica a qualunque distanza |
-| Apertura storia | 360 ms | tabella `OPEN_CURVE`: parte veloce |
-| Vicini all'apertura | sinistra −160cu, destra +210cu | |
+| Apertura storia: la card va al centro | 600 ms | `GLIDE_CURVE`; il carosello resta fermo, si muove solo la card scelta |
+| Le altre card all'apertura | spariscono in fade nel primo 2/3 dell'apertura, mentre si spostano di −160cu / +210cu | |
+| Dettagli dentro la card (clip, glifo, avatar → "+") | 360 ms | `--ease-open` (curva di apertura misurata dalla GIF, parte veloce) |
 | Fondo card / ombra all'apertura | 200 ms / 480 ms | |
 | Capitoli e "+" | entrano dopo 120–220 ms | |
 
-Le tabelle sono in [`js/main.js`](js/main.js) e replicate in CSS come `linear()` (`--ease-glide`, `--ease-open`).
+`GLIDE_CURVE` è in [`js/main.js`](js/main.js) e replicata in CSS come `linear()` (`--ease-glide`); `--ease-open` è solo in CSS.
 
 ## Interazioni
 
 - Autoplay: un passo verso sinistra ogni 2,4 s. Si ferma su hover, focus, storia aperta, tab nascosta, `prefers-reduced-motion`, o col pulsante pausa (Tab per raggiungerlo).
 - Trascina/swipe: sotto metà card torna indietro, oltre avanza; un lancio veloce scorre più card (max 4).
 - Rotella orizzontale / trackpad / Shift+rotella → carosello. Rotella verticale → scroll della pagina.
-- Click su una card → si porta nel 2° slot (1° su telefono) e si apre. Click di nuovo, Esc o click sulla parete → si chiude.
+- Click su una card → le altre spariscono in fade e la card scelta si porta al centro, con "Provalo" e la descrizione alla sua destra (la coppia è centrata, `OPEN_GROUP_CENTER`); su telefono va nel 1° slot. Click di nuovo, Esc o click sulla parete → si chiude e le altre ricompaiono.
 - Frecce ←/→ con focus nel carosello.
 
 ## Lingue (IT / EN)
@@ -74,7 +85,7 @@ Le tabelle sono in [`js/main.js`](js/main.js) e replicate in CSS come `linear()`
 - Italiano di default. Lo switch in alto a destra (bandiera + sigla; su telefono nella prima riga) passa all'inglese e la scelta resta in `localStorage` (`scrollstudio-lang`).
 - I testi italiani sono scritti nell'HTML; l'inglese sta accanto, sullo stesso elemento: `data-en="…"` per il testo, `data-en-aria-label`, `data-en-aria-roledescription`, `data-en-content` per gli attributi.
 - Testo nuovo da tradurre = elemento con solo testo dentro (niente icone: avvolgi il testo in uno `<span>`) + `data-en`.
-- La data in alto segue la lingua ("Venerdì, 10 ago" / "Friday, 10 aug"); le etichette del pulsante pausa sono in `TOGGLE_LABELS` in [`js/main.js`](js/main.js).
+- Le etichette del pulsante pausa sono in `TOGGLE_LABELS` in [`js/main.js`](js/main.js).
 - Lingua attiva: inchiostro `--ink-900` e bandiera a colori; l'altra: `--ink-700` e bandiera in grigio al 50%.
 
 ## Progetti (card video)
