@@ -137,6 +137,7 @@
   const openTargetX = () => (phone.matches ? startX : track.clientWidth / 2 - OPEN_GROUP_CENTER * (cardW / 175));
 
   function render() {
+    if (!loopLen) return; // not laid out yet
     const cu = cardW / 175;
     const openSlot = openSlide ? slotX(slides.indexOf(openSlide)) : 0;
     const openX = openSlot + (openTargetX() - openSlot) * spread;
@@ -257,7 +258,7 @@
 
   function scheduleAutoplay() {
     clearTimeout(autoplayTimer);
-    if (tweens.has('offset') || isPaused()) return;
+    if (!loopLen || tweens.has('offset') || isPaused()) return;
     autoplayTimer = setTimeout(() => step(1), DWELL_MS);
   }
 
@@ -532,7 +533,8 @@
   // Init + resize: keep the same card in the first slot, close any open story.
   let lastWidth = -1;
   function relayout() {
-    if (track.clientWidth === lastWidth) return;
+    // No size yet (hidden frame, 0×0 viewport): zero-width cards would need endless clones. Wait for a resize.
+    if (!originals[0].offsetWidth || track.clientWidth === lastWidth) return;
     lastWidth = track.clientWidth;
     const index = pitch ? Math.round(targetOffset() / pitch) : 0;
     tweens.clear();
