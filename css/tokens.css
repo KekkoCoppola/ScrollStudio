@@ -1,8 +1,12 @@
 /* ScrollStudio design tokens
    Derived from the reference GIF (800×600, 136 frames at 25 fps).
-   1u = 1px of the reference frame; 1cu = 1px of a 175px-wide reference card. */
+   1u = 1px of the reference frame; 1cu = 1px of a 175px-wide reference card.
+   Themes: :root is the light theme; :root[data-theme="dark"] (set by design-kit/theme.js) redefines
+   the colours with the same values as design-kit/tokens.css. See DESIGN.md, "Tema scuro". */
 
 :root {
+  color-scheme: light;
+
   /* Scale: the whole room, topbar down to the desk legs (803u), always fits the screen. */
   --u: min(100vw / 800, 100vh / 803);
   --u: min(100vw / 800, 100svh / 803);
@@ -31,6 +35,22 @@
 
   /* Shadow */
   --shadow-ink: 34 31 29;
+  --shadow-raise: 0 2px 10px rgb(var(--shadow-ink) / 0.12);  /* pause button */
+  --shadow-card: rgb(var(--shadow-ink) / 0.3);               /* story card colours (geometry in cu): wide shadow… */
+  --shadow-card-contact: rgb(var(--shadow-ink) / 0.06);      /* …and the thin one under its edge */
+  --shadow-coral-color: rgb(253 118 126 / 0.55);             /* under the coral "+" (colour: the geometry is in cu) */
+
+  /* Roles (light values = before the dark theme) */
+  --stage-glow-end: rgb(250 250 250 / 0);  /* transparent tail of the light behind an opened story */
+  --ink-hover: #000;                       /* chapter title under the pointer, one step past --ink-900 */
+  --on-coral-icon: #FFFFFF;                /* the "+" glyph on coral */
+
+  /* On media: text and rings over the project videos. Content, so the same in both themes */
+  --on-media: #FBFBFA;
+  --on-media-soft: rgb(251 251 250 / 0.75);
+  --media-ring: rgb(251 251 250 / 0.35);
+  --media-shadow: rgb(0 0 0 / 0.35);
+  --media-ink: 34 31 29;                   /* shade and text shadow over the video */
 
   /* Type */
   --font: "Urbanist", "Gilroy", "Sofia Pro", ui-sans-serif, system-ui, sans-serif;
@@ -63,6 +83,34 @@
   --dur-fade: 200ms;
   --dur-shadow: 480ms;
   --dur-hover: 400ms;
+}
+
+/* Dark theme: the same room in the evening. Values from design-kit/tokens.css (kit 1.1) */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --wall-top: #2C2C2B;
+  --wall-mid: #272726;
+  --wall-bottom: #212120;
+  --wall-light: rgb(255 255 255 / 0.04);
+  --wall-glow: rgb(255 255 255 / 0.08);
+
+  --card: #353534;
+
+  --ink-900: #ECEAE6;
+  --ink-700: #C5C2BC;
+  --ink-500: #A3A09A;
+
+  --brand-violet: #9670EC;  /* #8E5EEA is 2.9:1 on the dark card; this one is 3.4:1 */
+
+  --shadow-ink: 0 0 0;
+  --shadow-raise: 0 2px 10px rgb(var(--shadow-ink) / 0.36);
+  --shadow-card: rgb(var(--shadow-ink) / 0.65);
+  --shadow-card-contact: rgb(var(--shadow-ink) / 0.25);
+  --shadow-coral-color: rgb(var(--shadow-ink) / 0.45);  /* a coral shadow would glow on graphite */
+
+  --stage-glow-end: rgb(255 255 255 / 0);
+  --ink-hover: #FAF8F5;
 }
 
 /* Portrait tablets and tall windows: bigger cards, the room fills the height */
