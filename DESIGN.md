@@ -31,6 +31,7 @@ Wordmark "Scroll / STUDIO" con le lettere tagliate in orizzontale, grigio `#4242
 | File | Dove |
 |---|---|
 | `assets/logos/scrollstudio-wordmark.svg` | header in alto a sinistra (link alla home, alto 34u, min 30px; 34px su telefono) e footer (26u, min 30px). È `ScrollStudioLogo.svg` con il viewBox stretto sul disegno |
+| `assets/logos/scrollstudio-wordmark-light.svg` | lo stesso disegno chiaro (`#C5C2BC`, ® `#474746`), al posto dell'altro nel tema scuro (vedi "Tema scuro") |
 | `assets/icons/favicon.svg` | favicon: la "S" del logo su fondo `#ECECEC` arrotondato |
 | `assets/icons/apple-touch-icon.png` | icona iOS 180×180: wordmark su `#ECECEC`, da `ScrollStudioNOBG.png` |
 
@@ -90,6 +91,56 @@ Il logo non va sotto i ~30px di altezza: i tagli delle lettere spariscono.
 - Le etichette del pulsante pausa sono in `TOGGLE_LABELS` in [`js/main.js`](js/main.js).
 - Lingua attiva: inchiostro `--ink-900` e bandiera a colori; l'altra: `--ink-700` e bandiera in grigio al 50%.
 
+## Tema scuro
+
+La stessa stanza, di sera. Lo switch (sole / luna) sta subito dopo quello della lingua, nella stessa riga anche su telefono. Di default segue il sistema (`prefers-color-scheme`); la scelta resta in `localStorage` (`scrollstudio-theme`) e, siccome hub e app stanno sullo stesso origin, vale anche nelle app della famiglia.
+
+### Contratto
+
+Lo stesso del kit (`design-kit/FAMILY-DESIGN.md`, "Temi"), con le classi dell'hub:
+
+| Cosa | Valore |
+|---|---|
+| Attributo | `<html data-theme="light\|dark">` |
+| Chiave `localStorage` | `scrollstudio-theme` (`light` / `dark`; se manca segue il sistema) |
+| Evento | `ss:theme` su `document`, `detail: { theme }` |
+| API | `window.ssTheme()`, `window.ssSetTheme(t)` |
+| Bottoni | `.theme` > `.theme__option[data-theme-choice="light\|dark"]` (nel kit: `.ss-theme`, `.ss-theme__option`) |
+| Script | `design-kit/theme.js`, caricato direttamente dal kit (non una copia), sincrono nel `<head>` prima dei CSS: niente lampo chiaro→scuro. Aggiorna anche `<meta name="theme-color">` |
+
+### Token
+
+Il blocco `:root[data-theme="dark"]` di [`css/tokens.css`](css/tokens.css) usa gli stessi valori del kit:
+
+| Token | Chiaro | Scuro |
+|---|---|---|
+| `--wall-top` → `--wall-bottom` | `#E9E9E8` → `#D7D6D5` | `#2C2C2B` → `#212120` (`--wall-mid` `#272726`) |
+| `--wall-light` / `--wall-glow` | bianco 38% / `#FAFAFA` 85% | bianco 4% / bianco 8% |
+| `--card` | `#FBFBFA` | `#353534` |
+| `--ink-900` / `--ink-700` / `--ink-500` | `#2B2B2D` / `#48484B` / `#76767A` | `#ECEAE6` / `#C5C2BC` / `#A3A09A` |
+| `--brand-violet` (focus) | `#8E5EEA` | `#9670EC` (3,4:1 sulla card scura) |
+| `--shadow-ink` | `34 31 29` | `0 0 0` |
+
+Token di ruolo nati per il tema, che in chiaro valgono quello che prima era scritto a mano in `css/main.css`:
+
+| Token | Chiaro | Scuro | Ruolo |
+|---|---|---|---|
+| `--shadow-raise` | `0 2px 10px` α 0,12 | α 0,36 | pulsante pausa |
+| `--shadow-card` / `--shadow-card-contact` | α 0,3 / α 0,06 | nero α 0,65 / α 0,25 | colori dell'ombra della card (la geometria è in cu) |
+| `--shadow-coral-color` | corallo α 0,55 | nero α 0,45 | ombra del "+" (al buio un'ombra corallo sarebbe un alone) |
+| `--stage-glow-end` | `rgb(250 250 250 / 0)` | `rgb(255 255 255 / 0)` | coda della luce dietro la storia aperta |
+| `--ink-hover` | `#000` | `#FAF8F5` | titolo del capitolo sotto il puntatore |
+| `--on-coral-icon` | `#FFFFFF` | uguale | glifo del "+" |
+| `--on-media`, `--on-media-soft`, `--media-ring`, `--media-shadow`, `--media-ink` | `#FBFBFA`, 75%, 35%, nero 35%, `34 31 29` | uguali | testo, anello dell'avatar e sfumatura **sopra i video**: sono contenuto, non cambiano col tema |
+
+### Scelte
+
+- **Card dei progetti**: video, poster, avatar e il testo sopra il video restano identici (contenuto); cambia solo l'ombra della card sulla parete, più nera.
+- **Wordmark**: due `<img>` (topbar e footer), `.only-light` / `.only-dark`; quello chiaro è `scrollstudio-wordmark-light.svg`.
+- **Scena scrivania**: `desk-scene-dark.svg`, stesso disegno con la luce della sera: la scrivania bianca diventa grafite chiara (un gradino sopra la parete scura, come la bianca è un gradino sopra quella chiara), la sedia nera si schiarisce quanto basta per staccarsi dalla grafite e il bordo del guscio è un po' più chiaro, le ombre a terra sono più dense; pianta e vaso tengono i loro colori.
+- **Ombre**: nere e più dense (la scala del kit moltiplicata circa per tre), nessun alone colorato.
+- **Contrasti** (tutti calcolati, formula WCAG): testo ≥ 4,5:1 su parete e card, focus ≥ 3:1. Tabella completa in `design-kit/CHANGELOG.md`.
+
 ## Progetti (card video)
 
 Il carosello mostra i progetti: Bouncical e TopFratmRanks. Ogni card è `class="story story--video"` con un `<video class="story__image">` al posto dell'immagine: riempie la card (`object-fit: cover`), testo chiaro e sfumatura scura in alto per il titolo.
@@ -125,6 +176,7 @@ Non più usate in `index.html`, ora occupato dai progetti. I file restano come r
 | `assets/placeholders/pop-01-shadow.svg`, `pop-04-hair.svg` | parti che escono dalla card | PNG trasparente; posizione con `--l --t --w` |
 | `assets/placeholders/avatar-0X.svg` | avatar autori | 128×128 |
 | `assets/scene/desk-scene.svg` | scena scrivania | facoltativo: PNG trasparente 1380×1080 |
+| `assets/scene/desk-scene-dark.svg` | la stessa scena nel tema scuro (vedi "Tema scuro") | se la scena diventa un PNG, serve anche la sua variante scura |
 
 Per una card con panorama usa `class="story story--pano"` e `<img class="story__pano">` (vedi Apogee nel primo commit). Capitoli: ogni `<a class="point">` ha la posizione in cu (`--x --y`, e `--xs --ys` per il telefono).
 
