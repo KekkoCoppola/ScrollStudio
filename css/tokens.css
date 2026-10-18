@@ -3,9 +3,9 @@
    1u = 1px of the reference frame; 1cu = 1px of a 175px-wide reference card. */
 
 :root {
-  /* Scale: the whole room, topbar down to the desk legs (730u), always fits the screen. */
-  --u: min(100vw / 800, 100vh / 730);
-  --u: min(100vw / 800, 100svh / 730);
+  /* Scale: the whole room, topbar down to the desk legs (803u), always fits the screen. */
+  --u: min(100vw / 800, 100vh / 803);
+  --u: min(100vw / 800, 100svh / 803);
 
   /* Wall */
   --wall-top: #E9E9E8;
@@ -38,16 +38,17 @@
   --fw-light: 300;
   --fw-regular: 400;
 
-  /* Room geometry (top-anchored, as in the reference frame) */
+  /* Room geometry (top-anchored, as in the reference frame; the hero pushes cards and desk down 73u) */
   --gutter: calc(var(--u) * 45);
   --header-h: calc(var(--u) * 68);
-  --room-h: calc(var(--u) * 730);
+  --hero-top: calc(var(--u) * 78);
+  --room-h: calc(var(--u) * 803);
   --card-w: calc(var(--u) * 175);
   --card-gap: calc(var(--u) * 60);
-  --card-top: calc(var(--u) * 107);
+  --card-top: calc(var(--u) * 180);
   --track-pad-top: calc(var(--u) * 92);
   --track-pad-bottom: calc(var(--u) * 80);
-  --scene-top: calc(var(--u) * 360);
+  --scene-top: calc(var(--u) * 433);
   --scene-w: calc(var(--u) * 460);
 
   /* Card */
@@ -67,8 +68,8 @@
 /* Portrait tablets and tall windows: bigger cards, the room fills the height */
 @media (min-width: 641px) and (orientation: portrait) {
   :root {
-    --u: min(100vw / 620, 100vh / 740);
-    --u: min(100vw / 620, 100svh / 740);
+    --u: min(100vw / 620, 100vh / 813);
+    --u: min(100vw / 620, 100svh / 813);
   }
 }
 
@@ -78,9 +79,9 @@
     --u: calc(100vw / 400);
     --fs-meta: 13px;
     --gutter: 24px;
-    /* on short screens the cards and the desk shrink together, so the desk still ends on screen */
-    --card-w: min(58vw, 300px, 33vh - 62px);
-    --card-w: min(58vw, 300px, 33svh - 62px);
+    /* on short screens the cards and the desk shrink together, so the desk still ends on screen under the hero */
+    --card-w: min(58vw, 300px, 31.5vh - 68px);
+    --card-w: min(58vw, 300px, 31.5svh - 68px);
     --card-gap: 6vw;
     --track-pad-top: calc(var(--cu) * 70);
     --track-pad-bottom: calc(var(--cu) * 70);

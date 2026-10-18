@@ -42,7 +42,9 @@ Il logo non va sotto i ~30px di altezza: i tagli delle lettere spariscono.
 
 | Ruolo | Dimensione (px del frame 800) | Peso |
 |---|---|---|
-| Nav (Servizi · Abbonamento · Home) / lingua | 9 | 400 |
+| Nav (Home · Servizi · Abbonamento) / lingua | 9 | 400 |
+| Titolo della pagina (hero, `h1`) | 26 (min 22px; 22px su telefono), `--ink-900` | 300 |
+| Descrizione hero | 11 (min 13px), `--ink-700`, max 330u, `text-wrap: balance` | 400 |
 | Titolo card | 17 | 300 |
 | Autore card | 10.5 | 400 |
 | Capitolo grande ("Explorer") | 26 | 300 |
@@ -51,13 +53,13 @@ Il logo non va sotto i ~30px di altezza: i tagli delle lettere spariscono.
 ## Unità e layout
 
 - `1u` = 1px del frame 800×600. `1cu` = 1px di una card larga 175 (dentro la card tutto è in `cu`).
-- La stanza è ancorata in alto come nella GIF: header `0–68u`, card a `107u` (175×240u, passo 235u), scrivania a `360u`. La scena continua fino al pavimento (`730u`): la stanza intera, scrivania compresa, sta sempre nello schermo senza scroll; sotto c'è solo il footer.
+- La stanza è ancorata in alto come nella GIF: header `0–68u`, titolo della pagina (hero) da `78u`, card a `180u` (175×240u, passo 235u), scrivania a `433u`. La scena continua fino al pavimento (`803u`): la stanza intera, scrivania compresa, sta sempre nello schermo senza scroll; sotto c'è solo il footer. Rispetto alla GIF, card e scrivania sono scese di 73u per far posto all'hero.
 
 | Formato | Scala | Note |
 |---|---|---|
-| Desktop e finestre orizzontali | `min(100vw/800, 100svh/730)` | la stanza (730u) entra in altezza; su schermi larghi le card si moltiplicano ai lati |
-| Tablet verticale | `min(100vw/620, 100svh/740)` | card più grandi |
-| Telefono ≤640px | card `min(58vw, 300px, 33svh − 62px)`, scrivania larga 2 card | header su due righe, poi card, "Servizi", scrivania: tutto nello schermo fino a 320×568 |
+| Desktop e finestre orizzontali | `min(100vw/800, 100svh/803)` | la stanza (803u) entra in altezza; su schermi larghi le card si moltiplicano ai lati |
+| Tablet verticale | `min(100vw/620, 100svh/813)` | card più grandi |
+| Telefono ≤640px | card `min(58vw, 300px, 31.5svh − 68px)`, scrivania larga 2 card | header su due righe, poi titolo, card, scrivania: tutto nello schermo fino a 320×568 (verificato anche 375×667 e 390×844) |
 
 ## Motion (misurato dalla GIF)
 
